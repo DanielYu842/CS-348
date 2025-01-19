@@ -27,7 +27,7 @@ services:
     networks:
       - services-net
     volumes:
-      - ./sceneit:/sceneit
+      - ./sceneit:/app
     command:
       sh -c "fastapi dev main.py"
 
