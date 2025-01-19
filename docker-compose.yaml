@@ -13,9 +13,24 @@ services:
       - services-net 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
       retries: 5
+
+  sceneit:
+    build: ./sceneit
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - services-net
+    volumes:
+      - ./sceneit:/sceneit
+    command:
+      sh -c "fastapi dev main.py"
+
 
 networks:
   services-net:

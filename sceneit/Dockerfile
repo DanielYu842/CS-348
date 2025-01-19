@@ -3,19 +3,18 @@ FROM --platform=$BUILDPLATFORM python:3.11-slim
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies, including PostgreSQL client tools
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-client \
-    curl \
+# Install system dependencies for psycopg2 and other tools
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-
-COPY ./sceneit/requirements.txt /sceneit/requirements.txt
-RUN pip install --no-cache-dir -r /sceneit/requirements.txt
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Copy the application code
-COPY ./sceneit /app
+COPY . /app
 
 # Expose the FastAPI default port
 EXPOSE 8000
