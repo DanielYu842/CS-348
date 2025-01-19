@@ -1,7 +1,7 @@
 # Makefile
 
 # Default target
-.PHONY: start stop clean help
+.PHONY: start stop clean help connect
 
 start:
 	docker compose up --build
