@@ -1,6 +1,6 @@
 # CS-348
-test
-Setup Instructions
+
+## Setup Instructions
 1.	Install Prerequisites:
 	•	Docker
 	•	Make
@@ -14,3 +14,14 @@ Setup Instructions
 And the fastapi server along with postgres should be running!
 
 For each of the 4 milestones, we plan to just copy over the code from the previous milestone and duplicate the code.
+
+
+## Seeding Data
+
+`cd Milestone0`
+`./setup_and_seed.sh`
+
+## Connecting To Our Application
+
+Run the following:
+`curl -X GET http://localhost:8000`
