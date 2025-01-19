@@ -1,1 +1,14 @@
 # CS-348
+
+Setup Instructions
+1.	Install Prerequisites:
+	•	Docker
+	•	Make
+
+2.	Run the App:
+	•	Navigate to the `Milestone0` folder:
+        `cd Milestone0`
+    •	Start the application:
+        `make start`
+    
+And the fastapi server along with postgres should be running!
