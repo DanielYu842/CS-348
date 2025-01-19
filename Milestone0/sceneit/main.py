@@ -1,6 +1,6 @@
-from typing import Union
+from typing import Union, List, Dict
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -12,37 +12,36 @@ connection_params = {
     "dbname": "test_db",
     "user": "postgres",
     "password": "passcode",
-    "host": "db",  # e.g., "localhost" or an IP address
-    "port": "5432"        # Default PostgreSQL port
+    "host": "db",
+    "port": "5432"
 }
 
-try:
-    # Establish the connection
-    conn = psycopg2.connect(**connection_params)
-    print("Connection to the database was successful.")
-
-    # Create a cursor object
-    cur = conn.cursor()
-
-    # Execute an SQL query
-    cur.execute("SELECT version();")
-
-    # Fetch the result
-    db_version = cur.fetchone()
-    print(f"PostgreSQL version: {db_version}")
-
-    # Close the cursor and connection
-    cur.close()
-    conn.close()
-
-except psycopg2.Error as e:
-    print(f"Error connecting to PostgreSQL: {e}")
+def get_db_connection():
+    try:
+        conn = psycopg2.connect(**connection_params)
+        return conn
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Error connecting to the database: {e}")
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/values")
+def get_values() -> List[Dict[str, Union[int, str]]]:
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+
+        cur.execute("SELECT id, name, value FROM sample_table;")
+
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [{"id": row[0], "name": row[1], "value": row[2]} for row in rows]
+
+    except psycopg2.Error as e: 
+        raise HTTPException(status_code=500, detail=f"Error fetching values: {e}") 
