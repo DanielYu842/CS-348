@@ -1,6 +1,7 @@
 from typing import Union, List, Dict
 
 from fastapi import FastAPI, HTTPException
+from queries.seed import GET_SEED_VALUES
 
 app = FastAPI()
 
@@ -34,7 +35,7 @@ def get_values() -> List[Dict[str, Union[int, str]]]:
     try:
         cur = conn.cursor()
 
-        cur.execute("SELECT id, name, value FROM sample_table;")
+        cur.execute(GET_SEED_VALUES)
 
         rows = cur.fetchall()
 
