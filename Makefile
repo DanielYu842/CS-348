@@ -12,6 +12,9 @@ stop:
 clean:
 	docker compose down -v
 
+connect:
+	psql -h localhost -U postgres -d test_db
+
 help:
 	@echo "Available commands:"
 	@echo "  start   - Build and start the Docker Compose services"
