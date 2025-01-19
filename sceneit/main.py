@@ -12,7 +12,7 @@ connection_params = {
     "dbname": "test_db",
     "user": "postgres",
     "password": "passcode",
-    "host": "postgres",  # e.g., "localhost" or an IP address
+    "host": "db",  # e.g., "localhost" or an IP address
     "port": "5432"        # Default PostgreSQL port
 }
 
