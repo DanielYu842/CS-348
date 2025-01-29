@@ -1,48 +1,26 @@
-from typing import Union, List, Dict
-
-from fastapi import FastAPI, HTTPException
-from queries.seed import GET_SEED_VALUES
+from fastapi import FastAPI
+from queries.create_tables import CREATE_TABLES_SQL
+from static.vars import MOVIES_CSV_PATH
+from utils.insert_data import insert_movies
+from utils.db import get_db_connection
 
 app = FastAPI()
 
+def setup_database():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute(CREATE_TABLES_SQL)
+    conn.commit()
 
-import psycopg2
+    insert_movies(MOVIES_CSV_PATH)
 
-# Define connection parameters
-connection_params = {
-    "dbname": "test_db",
-    "user": "postgres",
-    "password": "passcode",
-    "host": "db",
-    "port": "5432"
-}
+    cur.close()
+    conn.close()
 
-def get_db_connection():
-    try:
-        conn = psycopg2.connect(**connection_params)
-        return conn
-    except psycopg2.Error as e:
-        raise HTTPException(status_code=500, detail=f"Error connecting to the database: {e}")
+setup_database()
+
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/values")
-def get_values() -> List[Dict[str, Union[int, str]]]:
-    conn = get_db_connection()
-    try:
-        cur = conn.cursor()
-
-        cur.execute(GET_SEED_VALUES)
-
-        rows = cur.fetchall()
-
-        cur.close()
-        conn.close()
-
-        return [{"id": row[0], "name": row[1], "value": row[2]} for row in rows]
-
-    except psycopg2.Error as e: 
-        raise HTTPException(status_code=500, detail=f"Error fetching values: {e}") 
+    return {"message": "hello world sceneit"}

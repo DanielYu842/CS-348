@@ -25,6 +25,3 @@ For each of the 4 milestones, we plan to just copy over the code from the previo
 
 Run the following, to see hello world:
 `curl -X GET http://localhost:8000`
-
-Run the following, to see the data loaded from the seed script:
-`curl -X GET http://localhost:8000/values`
