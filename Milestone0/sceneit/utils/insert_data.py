@@ -5,21 +5,21 @@ from queries.insert_movie import INSERT_MOVIE_SQL
 from objects.movie import Movie
 from psycopg2.extensions import cursor
 
-def insert_into_entity_table(cur: cursor, entity_name, entity_table, entity_column):
+def insert_into_entity_table(cur: cursor, table_name, entity_name):
     cur.execute(f"""
-        INSERT INTO {entity_table} ({entity_column}) 
+        INSERT INTO {table_name} (name) 
         VALUES (%s) 
-        ON CONFLICT ({entity_column}) 
-        DO UPDATE SET {entity_column} = EXCLUDED.{entity_column} 
-        RETURNING {entity_table.lower()}_id;
+        ON CONFLICT (name) 
+        DO UPDATE SET name = EXCLUDED.name 
+        RETURNING {table_name.lower()}_id;
     """, (entity_name,))
     
     entity_id = cur.fetchone()[0]
     return entity_id
 
-def insert_into_junction_table(cur: cursor, table_name, movie_id, entity_id, entity_table):
+def insert_into_junction_table(cur: cursor, table_name, entity_table_name, movie_id, entity_id, ):
     cur.execute(f"""
-        INSERT INTO {table_name} (movie_id, {entity_table.lower()}_id) 
+        INSERT INTO {table_name} (movie_id, {entity_table_name.lower()}_id) 
         VALUES (%s, %s) 
         ON CONFLICT DO NOTHING;
     """, (movie_id, entity_id))
@@ -29,17 +29,17 @@ def populate_movie_junctions(movie: Movie, cur: cursor):
     movie_id = cur.fetchone()[0]
 
     relations = {
-        "MovieGenre": (movie.genres, "Genre", "name"),
-        "MovieDirector": (movie.directors, "Director", "name"),
-        "MovieWriter": (movie.writers, "Writer", "name"),
-        "MovieActor": (movie.actors, "Actor", "name"),
-        "MovieStudio": (movie.studios, "Studio", "name"),
+        "MovieGenre": (movie.genres, "Genre"),
+        "MovieDirector": (movie.directors, "Director"),
+        "MovieWriter": (movie.writers, "Writer"),
+        "MovieActor": (movie.actors, "Actor"),
+        "MovieStudio": (movie.studios, "Studio"),
     }
 
-    for table_name, (entities, entity_table, entity_column) in relations.items():
+    for table_name, (entities, entity_table_name) in relations.items():
         for entity_name in entities:
-            entity_id = insert_into_entity_table(cur, entity_name, entity_table, entity_column)
-            insert_into_junction_table(cur, table_name, movie_id, entity_id, entity_table)
+            entity_id = insert_into_entity_table(cur, entity_table_name, entity_name)
+            insert_into_junction_table(cur, table_name, entity_table_name, movie_id, entity_id, )
 
 
 
