@@ -15,5 +15,10 @@ class Movie:
       self.tomatometer_count = int(movie_attrs['tomatometer_count'])
       self.audience_rating = float(movie_attrs['audience_rating'])
       self.audience_count = int(movie_attrs['audience_count'])
-      
-      
+      self.genres = movie_attrs['genre'].split(', ')
+      self.directors = movie_attrs['directors'].split(', ') 
+      self.writers = movie_attrs['writers'].split(', ') 
+      self.actors = movie_attrs['cast'].split(', ') 
+      self.studios = movie_attrs['studio_name'].split(', ') 
+   
+   
