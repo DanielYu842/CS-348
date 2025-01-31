@@ -1,5 +1,7 @@
 FROM --platform=$BUILDPLATFORM python:3.11-slim
 
+ENV PYTHONUNBUFFERED=1
+
 # Set the working directory
 WORKDIR /app
 
