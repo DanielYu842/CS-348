@@ -18,6 +18,8 @@ For each of the 4 milestones, we plan to just copy over the code from the previo
 
 ## Seeding Data
 
+ensure `PRODUCTION=FALSE` in `/static/vars.py`
+
 `cd Milestone0`
 `./setup_and_seed.sh`
 
