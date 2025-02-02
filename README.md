@@ -6,22 +6,20 @@
 	•	Make
 
 2.	Run the App:
-	•	Navigate to the `Milestone0` folder:
-        `cd Milestone0`
+	•	Navigate to the `Milestone1` folder:
+        `cd Milestone1`
     •	Start the application:
         `make start`
     
-And the fastapi server along with postgres should be running!
+And the fastapi server along with postgres should be running! You should also be able to see the initially seeded data that we've
+take from Maven Analytics.
 
 For each of the 4 milestones, we plan to just copy over the code from the previous milestone and duplicate the code.
 
 
 ## Seeding Data
 
-ensure `PRODUCTION=FALSE` in `/static/vars.py`
-
-`cd Milestone0`
-`./setup_and_seed.sh`
+Ensure `PRODUCTION=TRUE` in `/static/vars.py` to load the dataset.
 
 ## Connecting To Our Application
 
