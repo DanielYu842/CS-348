@@ -25,14 +25,15 @@ setup_database()
 def read_root():
     return {"message": "hello world sceneit"}
 
-@app.get("/movie_data")
-def get_values():
+@app.get("/data/{table_name}")
+def get_table_data(table_name: str):
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM Movie;")
+                query = f"SELECT * FROM {table_name};"  # Using parameterized table name
+                cur.execute(query)
                 rows = cur.fetchall()
-                columns = [desc[0] for desc in cur.description]  # Get column names
+                columns = [desc[0] for desc in cur.description]
 
         return [dict(zip(columns, row)) for row in rows]  # Convert to list of dictionaries
 
