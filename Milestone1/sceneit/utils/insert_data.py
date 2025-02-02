@@ -1,7 +1,7 @@
 from utils.db import get_db_connection
 from utils.load_csv import load_csv_data
 from static.vars import IS_PRODUCTION
-from queries.insert_movie import INSERT_MOVIE_SQL
+from queries.insert_movie import INSERT_MOVIE_SQL, NUM_MOVIES_SQL
 from objects.movie import Movie
 from psycopg2.extensions import cursor
 
@@ -42,10 +42,21 @@ def populate_movie_junctions(movie: Movie, cur: cursor):
             insert_into_junction_table(cur, table_name, entity_table_name, movie_id, entity_id, )
 
 
+def hasMoviesBeenPopulated(cur):
+    cur.execute(NUM_MOVIES_SQL)
+
+    movie_count = cur.fetchone()[0]
+    return True if movie_count > 0 else False
 
 def insert_movies(csv_filepath: str):
     conn = get_db_connection()
     cur = conn.cursor()
+
+    if hasMoviesBeenPopulated(cur):
+       print("Movies table already populated. Skipping insertion.")
+       cur.close()
+       conn.close()
+       return 
     
     movies = load_csv_data(csv_filepath)
     numMovies = len(movies) if IS_PRODUCTION else 3

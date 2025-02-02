@@ -5,3 +5,5 @@ INSERT INTO Movie (title, info, critics_consensus, rating, in_theaters_date,
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 RETURNING movie_id;
 """
+
+NUM_MOVIES_SQL = "SELECT COUNT(*) FROM Movie;"
