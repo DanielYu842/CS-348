@@ -69,4 +69,24 @@ CREATE TABLE IF NOT EXISTS MovieStudio (
     studio_id INT REFERENCES Studio(studio_id) ON DELETE CASCADE,
     PRIMARY KEY (movie_id, studio_id)
 );
+
+CREATE TABLE IF NOT EXISTS Users (
+  user_id SERIAL PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at VARCHAR(255) NOT NULL,
+  updated_at VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Reviews (
+    review_id SERIAL PRIMARY KEY,
+    movie_id INT NOT NULL REFERENCES Movie(movie_id),
+    user_id INT NOT NULL REFERENCES Users(user_id),
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    rating DECIMAL(4,2) NOT NULL CHECK (rating BETWEEN 0 AND 100),
+    created_at VARCHAR(255) NOT NULL,
+    updated_at VARCHAR(255) NOT NULL
+);
 """

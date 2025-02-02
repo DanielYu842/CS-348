@@ -2,6 +2,9 @@ from utils.db import get_db_connection
 from utils.load_csv import load_csv_data
 from static.vars import IS_PRODUCTION
 from queries.insert_movie import INSERT_MOVIE_SQL, NUM_MOVIES_SQL
+from queries.insert_tables import INSERT_REVIEW_SQL, INSERT_USER_SQL, NUM_REVIEWS_SQL, NUM_USERS_SQL
+from objects.user import User
+from objects.review import Review
 from objects.movie import Movie
 from psycopg2.extensions import cursor
 
@@ -40,6 +43,66 @@ def populate_movie_junctions(movie: Movie, cur: cursor):
         for entity_name in entities:
             entity_id = insert_into_entity_table(cur, entity_table_name, entity_name)
             insert_into_junction_table(cur, table_name, entity_table_name, movie_id, entity_id, )
+
+def hasUsersBeenPopulated(cur):
+    cur.execute(NUM_USERS_SQL)
+
+    count = cur.fetchone()[0]
+    return True if count > 0 else False
+
+def hasReviewsBeenPopulated(cur):
+    cur.execute(NUM_REVIEWS_SQL)
+
+    count = cur.fetchone()[0]
+    return True if count > 0 else False
+
+def insert_reviews(csv_filepath: str):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if hasReviewsBeenPopulated(cur):
+       print("Reviews table already populated. Skipping insertion.")
+       cur.close()
+       conn.close()
+       return 
+    
+    reviews = load_csv_data(csv_filepath)
+    numReviews = len(reviews) if IS_PRODUCTION else 3
+
+    for reviewIndex in range(numReviews):
+        review_attrs = reviews[reviewIndex]
+        if Review.review_attrs_soft_check(review_attrs):
+            review = Review(review_attrs)
+            cur.execute(INSERT_REVIEW_SQL, (
+                review.review_id, review.movie_id, review.user_id,
+                review.title, review.content, review.rating, review.created_at, review.updated_at))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def insert_users(csv_filepath: str):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if hasUsersBeenPopulated(cur):
+       print("Users table already populated. Skipping insertion.")
+       cur.close()
+       conn.close()
+       return 
+    
+    users = load_csv_data(csv_filepath)
+    numUsers = len(users) if IS_PRODUCTION else 3
+
+    for userIndex in range(numUsers):
+        user_attrs = users[userIndex]
+        if User.user_attrs_soft_check(user_attrs):
+            user = User(user_attrs)
+            cur.execute(INSERT_USER_SQL, (
+                user.user_id, user.username, user.email, user.password_hash,
+                user.created_at, user.updated_at))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 def hasMoviesBeenPopulated(cur):

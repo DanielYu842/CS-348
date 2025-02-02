@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException
 import psycopg2
 from typing import Optional, List
 from queries.create_tables import CREATE_TABLES_SQL
-from static.vars import MOVIES_CSV_PATH
-from utils.insert_data import insert_movies
+from static.vars import MOVIES_CSV_PATH, USERS_CSV_PATH,REVIEWS_CSV_PATH
+from utils.insert_data import insert_movies, insert_users, insert_reviews
 from utils.db import get_db_connection
 import psycopg2.extras
 from pydantic import BaseModel
@@ -19,6 +19,9 @@ def setup_database():
     conn.commit()
 
     insert_movies(MOVIES_CSV_PATH)
+    insert_users(USERS_CSV_PATH)
+    insert_reviews(REVIEWS_CSV_PATH)
+
 
     cur.close()
     conn.close()
@@ -66,6 +69,18 @@ def get_table_data(table_name: str):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Error fetching values: {e}")
+@app.get("/reviews/search")
+def search_comments_by_movie_id(movie_id: int):
+    query = f"SELECT Reviews.user_id, Reviews.title, Reviews.rating, Reviews.content from Reviews where movie_id = {movie_id}"
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                rows = cur.fetchall()
+                return rows
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+            
 
 @app.get("/movies/search")
 def search_movies(
