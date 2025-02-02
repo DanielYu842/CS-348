@@ -71,13 +71,16 @@ def get_table_data(table_name: str):
         raise HTTPException(status_code=500, detail=f"Error fetching values: {e}")
 @app.get("/reviews/search")
 def search_comments_by_movie_id(movie_id: int):
-    query = f"SELECT Reviews.user_id, Reviews.title, Reviews.rating, Reviews.content from Reviews where movie_id = {movie_id}"
+    query = f"SELECT * from Reviews where movie_id = {movie_id}"
     try:
         with get_db_connection() as conn:
-            with conn.cursor() as cur:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
                 cur.execute(query)
                 rows = cur.fetchall()
-                return rows
+                return {
+                    "count": len(rows),
+                    "results": rows
+                }
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
             
