@@ -5,7 +5,7 @@ connection_params = {
     "dbname": "test_db",
     "user": "postgres",
     "password": "passcode",
-    "host": "db",
+    "host": "database",
     "port": "5432"
 }
 

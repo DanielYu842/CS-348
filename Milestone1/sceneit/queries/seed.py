@@ -1,0 +1,1 @@
+GET_SEED_VALUES = "SELECT id, name, value FROM sample_table;"

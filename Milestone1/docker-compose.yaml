@@ -1,0 +1,40 @@
+services:
+  database:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=passcode
+      - POSTGRES_DB=test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - services-net 
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  sceneit:
+    build: ./sceneit
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - services-net
+    volumes:
+      - ./sceneit:/app
+    command:
+      uvicorn main:app --host 0.0.0.0 --port 8000
+
+networks:
+  services-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local
