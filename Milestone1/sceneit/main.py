@@ -10,19 +10,21 @@ from pydantic import BaseModel
 from datetime import date
 
 app = FastAPI()
+update_tables = True
 
 def setup_database():
     conn = get_db_connection()
     cur = conn.cursor()
     
+    
+    if update_tables:
+        print("Dropping all tables")
+        cur.execute("Drop table if exists Movie cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade;")
     cur.execute(CREATE_TABLES_SQL)
     conn.commit()
-
     insert_movies(MOVIES_CSV_PATH)
     insert_users(USERS_CSV_PATH)
     insert_reviews(REVIEWS_CSV_PATH)
-
-
     cur.close()
     conn.close()
 
@@ -69,9 +71,11 @@ def get_table_data(table_name: str):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Error fetching values: {e}")
+
+
 @app.get("/reviews/search")
 def search_comments_by_movie_id(movie_id: int):
-    query = f"SELECT * from Reviews where movie_id = {movie_id}"
+    query = f"SELECT * FROM Reviews join (Select user_id, username, email from Users) Users on Reviews.user_id = Users.user_id where movie_id = {movie_id}"
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:

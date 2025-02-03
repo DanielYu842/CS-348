@@ -8,6 +8,8 @@ from objects.review import Review
 from objects.movie import Movie
 from psycopg2.extensions import cursor
 
+SAMPLE_SIZE = 50
+
 def insert_into_entity_table(cur: cursor, table_name, entity_name):
     cur.execute(f"""
         INSERT INTO {table_name} (name) 
@@ -67,7 +69,7 @@ def insert_reviews(csv_filepath: str):
        return 
     
     reviews = load_csv_data(csv_filepath)
-    numReviews = len(reviews) if IS_PRODUCTION else 3
+    numReviews = len(reviews) if IS_PRODUCTION else min(SAMPLE_SIZE, len(reviews))
 
     for reviewIndex in range(numReviews):
         review_attrs = reviews[reviewIndex]
@@ -75,7 +77,7 @@ def insert_reviews(csv_filepath: str):
             review = Review(review_attrs)
             cur.execute(INSERT_REVIEW_SQL, (
                 review.review_id, review.movie_id, review.user_id,
-                review.title, review.content, review.rating, review.created_at, review.updated_at))
+                review.title, review.content, review.rating))
     conn.commit()
     cur.close()
     conn.close()
@@ -91,15 +93,15 @@ def insert_users(csv_filepath: str):
        return 
     
     users = load_csv_data(csv_filepath)
-    numUsers = len(users) if IS_PRODUCTION else 3
+    numUsers = len(users) if IS_PRODUCTION else min(len(users), SAMPLE_SIZE)
 
     for userIndex in range(numUsers):
         user_attrs = users[userIndex]
         if User.user_attrs_soft_check(user_attrs):
             user = User(user_attrs)
             cur.execute(INSERT_USER_SQL, (
-                user.user_id, user.username, user.email, user.password_hash,
-                user.created_at, user.updated_at))
+                user.user_id, user.username, user.email, user.password_hash
+                ))
     conn.commit()
     cur.close()
     conn.close()
@@ -114,15 +116,15 @@ def hasMoviesBeenPopulated(cur):
 def insert_movies(csv_filepath: str):
     conn = get_db_connection()
     cur = conn.cursor()
-
+    print("Ready to insert movie table")
     if hasMoviesBeenPopulated(cur):
        print("Movies table already populated. Skipping insertion.")
        cur.close()
        conn.close()
-       return 
+       return
     
     movies = load_csv_data(csv_filepath)
-    numMovies = len(movies) if IS_PRODUCTION else 3
+    numMovies = len(movies) if IS_PRODUCTION else min(len(movies), SAMPLE_SIZE)
 
     for movieIndex in range(numMovies):
         movie_attrs = movies[movieIndex]
