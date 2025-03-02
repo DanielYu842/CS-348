@@ -89,4 +89,25 @@ CREATE TABLE IF NOT EXISTS Reviews (
     created_at VARCHAR(255) NOT NULL,
     updated_at VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Comments (
+    comment_id SERIAL PRIMARY KEY,
+    review_id INT NOT NULL REFERENCES Reviews(review_id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Likes (
+    like_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
+    review_id INT REFERENCES Reviews(review_id) ON DELETE CASCADE,
+    comment_id INT REFERENCES Comments(comment_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CHECK (
+        (review_id IS NOT NULL AND comment_id IS NULL) OR 
+        (review_id IS NULL AND comment_id IS NOT NULL)
+    )
+);
 """

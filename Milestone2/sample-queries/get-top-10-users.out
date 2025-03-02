@@ -1,0 +1,12 @@
+| user_id | username | total_likes |
++---------+----------+-------------+
+| 1       | Alice    | 50          |
+| 2       | Bob      | 45          |
+| 3       | Charlie  | 40          |
+| 4       | David    | 38          |
+| 5       | Eve      | 35          |
+| 6       | Frank    | 30          |
+| 7       | Grace    | 28          |
+| 8       | Hannah   | 25          |
+| 9       | Isaac    | 22          |
+| 10      | Jack     | 20          |
