@@ -88,7 +88,6 @@ def search_comments_by_movie_id(movie_id: int):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
             
-
 @app.get("/movies/search")
 def search_movies(
     title: Optional[str] = None,
@@ -96,7 +95,8 @@ def search_movies(
     writers: Optional[List[str]] = None,
     actors: Optional[List[str]] = None,
     studios: Optional[List[str]] = None,
-    directors: Optional[List[str]] = None
+    directors: Optional[List[str]] = None,
+    year: Optional[int] = None
 ):
     try:
         with get_db_connection() as conn:
@@ -162,6 +162,10 @@ def search_movies(
                         params.append(director)
                     if director_conditions:
                         query += f" AND ({' OR '.join(director_conditions)})"
+
+                if year:
+                    query += " AND EXTRACT(YEAR FROM m.in_theaters_date) = %s"
+                    params.append(year)
 
                 query += """
                     )
