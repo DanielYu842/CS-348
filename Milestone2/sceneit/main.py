@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from datetime import date
 
 app = FastAPI()
-update_tables = True
+update_tables = False
 
 def setup_database():
     conn = get_db_connection()
@@ -126,50 +126,80 @@ def search_movies(
                 
                 # Add filter conditions
                 params = []
-                conditions = []
                 
                 if title:
-                    conditions.append("m.title ILIKE %s")
+                    query += " AND m.title ILIKE %s"
                     params.append(f"%{title}%")
                 
+                # For genres, require ALL to match
                 if genres:
-                    genre_placeholders = []
                     for genre in genres:
-                        genre_placeholders.append("%s")
+                        query += """ 
+                        AND EXISTS (
+                            SELECT 1 
+                            FROM MovieGenre mg_inner 
+                            JOIN Genre g_inner ON mg_inner.genre_id = g_inner.genre_id 
+                            WHERE mg_inner.movie_id = m.movie_id 
+                            AND g_inner.name ILIKE %s
+                        )
+                        """
                         params.append(f"%{genre}%")
-                    conditions.append(f"EXISTS (SELECT 1 FROM MovieGenre mg2 JOIN Genre g2 ON mg2.genre_id = g2.genre_id WHERE mg2.movie_id = m.movie_id AND g2.name ILIKE ANY(ARRAY[{', '.join(genre_placeholders)}]))")
                 
+                # For writers, require ALL to match
                 if writers:
-                    writer_placeholders = []
                     for writer in writers:
-                        writer_placeholders.append("%s")
+                        query += """ 
+                        AND EXISTS (
+                            SELECT 1 
+                            FROM MovieWriter mw_inner 
+                            JOIN Writer w_inner ON mw_inner.writer_id = w_inner.writer_id 
+                            WHERE mw_inner.movie_id = m.movie_id 
+                            AND w_inner.name ILIKE %s
+                        )
+                        """
                         params.append(f"%{writer}%")
-                    conditions.append(f"EXISTS (SELECT 1 FROM MovieWriter mw2 JOIN Writer w2 ON mw2.writer_id = w2.writer_id WHERE mw2.movie_id = m.movie_id AND w2.name ILIKE ANY(ARRAY[{', '.join(writer_placeholders)}]))")
                 
+                # For actors, require ALL to match
                 if actors:
-                    actor_placeholders = []
                     for actor in actors:
-                        actor_placeholders.append("%s")
+                        query += """ 
+                        AND EXISTS (
+                            SELECT 1 
+                            FROM MovieActor ma_inner 
+                            JOIN Actor a_inner ON ma_inner.actor_id = a_inner.actor_id 
+                            WHERE ma_inner.movie_id = m.movie_id 
+                            AND a_inner.name ILIKE %s
+                        )
+                        """
                         params.append(f"%{actor}%")
-                    conditions.append(f"EXISTS (SELECT 1 FROM MovieActor ma2 JOIN Actor a2 ON ma2.actor_id = a2.actor_id WHERE ma2.movie_id = m.movie_id AND a2.name ILIKE ANY(ARRAY[{', '.join(actor_placeholders)}]))")
                 
+                # For studios, require ALL to match
                 if studios:
-                    studio_placeholders = []
                     for studio in studios:
-                        studio_placeholders.append("%s")
+                        query += """ 
+                        AND EXISTS (
+                            SELECT 1 
+                            FROM MovieStudio ms_inner 
+                            JOIN Studio s_inner ON ms_inner.studio_id = s_inner.studio_id 
+                            WHERE ms_inner.movie_id = m.movie_id 
+                            AND s_inner.name ILIKE %s
+                        )
+                        """
                         params.append(f"%{studio}%")
-                    conditions.append(f"EXISTS (SELECT 1 FROM MovieStudio ms2 JOIN Studio s2 ON ms2.studio_id = s2.studio_id WHERE ms2.movie_id = m.movie_id AND s2.name ILIKE ANY(ARRAY[{', '.join(studio_placeholders)}]))")
                 
+                # For directors, require ALL to match
                 if directors:
-                    director_placeholders = []
                     for director in directors:
-                        director_placeholders.append("%s")
+                        query += """ 
+                        AND EXISTS (
+                            SELECT 1 
+                            FROM MovieDirector md_inner 
+                            JOIN Director d_inner ON md_inner.director_id = d_inner.director_id 
+                            WHERE md_inner.movie_id = m.movie_id 
+                            AND d_inner.name ILIKE %s
+                        )
+                        """
                         params.append(f"%{director}%")
-                    conditions.append(f"EXISTS (SELECT 1 FROM MovieDirector md2 JOIN Director d2 ON md2.director_id = d2.director_id WHERE md2.movie_id = m.movie_id AND d2.name ILIKE ANY(ARRAY[{', '.join(director_placeholders)}]))")
-                
-                # Add conditions to query if any exist
-                if conditions:
-                    query += " AND " + " AND ".join(conditions)
                 
                 # Add group by and ordering
                 query += """
