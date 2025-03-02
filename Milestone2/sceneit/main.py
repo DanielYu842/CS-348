@@ -96,7 +96,8 @@ def search_movies(
     actors: Optional[List[str]] = None,
     studios: Optional[List[str]] = None,
     directors: Optional[List[str]] = None,
-    year: Optional[int] = None
+    year: Optional[int] = None,
+    rating: Optional[str] = None
 ):
     try:
         with get_db_connection() as conn:
@@ -166,6 +167,10 @@ def search_movies(
                 if year:
                     query += " AND EXTRACT(YEAR FROM m.in_theaters_date) = %s"
                     params.append(year)
+
+                if rating:
+                    query += " AND m.rating ~* %s"
+                    params.append(rating)
 
                 query += """
                     )
