@@ -1,0 +1,7 @@
+ movie_id |                       title                        | rating | in_theaters_date | on_streaming_date | runtime_in_minutes 
+----------+----------------------------------------------------+--------+------------------+-------------------+--------------------
+       11 | Deep Blue                                          | G      | 2005-06-17       | 2006-04-11        |                 90
+        1 | Percy Jackson & the Olympians: The Lightning Thief | PG     | 2010-02-12       | 2010-06-29        |                 83
+        2 | Please Give                                        | R      | 2010-04-30       | 2010-10-19        |                 90
+       20 | Saint Ralph                                        | PG-13  | 2005-08-05       | 2005-12-13        |                 98
+        6 | The 39 Steps                                       | NR     | 1935-08-01       | 1935-06-06        |                 87
