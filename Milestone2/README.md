@@ -36,7 +36,7 @@
         - directors
         - writers
         - studios
-      - curl: `curl "http://localhost:8000/movies/search?title=matrix&genres=Action&genres=Sci-Fi&actors=Keanu%20Reeves&directors=Wachowski&writers=Wachowski&studios=Warner"`
+      - curl: `curl http://localhost:8000/movies/search?actors=Tom Hanks&studios=Sony Pictures&genres=Drama&genres=Action %26 Adventure`
   - CRUD operations on movies (http://localhost:8000/movies)
 
   - Create a New Movie
