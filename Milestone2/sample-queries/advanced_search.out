@@ -1,0 +1,38 @@
+-[ RECORD 1 ]------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+movie_id           | 3595
+title              | Inferno
+info               | Tom Hanks reprises his role as Harvard symbologist Robert Langdon in director Ron Howard and screenwriter David Koepp's adaptation of author Dan Brown's bestselling novel Inferno, which finds Langdon using Dante's The Divine Comedy as a tool in the race to prevent a devastating global pandemic. ~ Jason Buchanan, Rovi
+critics_consensus  | Senselessly frantic and altogether shallow, Inferno sends the Robert Langdon trilogy spiraling to a convoluted new low.
+rating             | PG-13
+in_theaters_date   | 2016-10-28
+on_streaming_date  | 2017-01-24
+runtime_in_minutes | 121
+tomatometer_status | Rotten
+tomatometer_rating | 23.00
+tomatometer_count  | 246
+audience_rating    | 36.00
+audience_count     | 28654
+genres             | {"Action & Adventure",Drama,"Mystery & Suspense"}
+writers            | {"David Koepp"}
+actors             | {"Alberto Basaluzzo","Alessandro Fabrizi","Alessandro Grimaldi","Ana Ularu","Attila Arpa","Balint Adorjani","Ben Foster","Buyukkol Mehmet Onur","Cristian Stelluti","Emilio Dino Conti","Felicity Jones","Felipe Torres","Fortunato Cerlino","Francesca Inaudi","Gabor Atlasz","Gabor Diossi","Gábor Nagypál","Gianni Annoni","Ida Darvish","Irrfan Khan","Jon Donahue","Kata Sarbo","Kerem Ozen","Lili Gesler","Luca Fiorilli","Maria Grazia Mandruzzato","Mario Acampa","Mehmet Ergen","Mirjam Novak","Omar Sy","Paolo Antonio Simioni","Pasquale Corrente","Paul Ritter","Peter Linka","Peter Schueller","Philip Arditti","Rebecka Sternberg","Sardar Tagirovsky","Sidse Babett Knudsen","Simone Mariani","Tom Hanks","Vincent Riotta","Vincenzo Tanassi","Xavier Laurent","Yang Haiwen","Zsolt Páll"}
+studios            | {"Sony Pictures"}
+directors          | {"Ron Howard"}
+-[ RECORD 2 ]------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+movie_id           | 2181
+title              | The Da Vinci Code
+info               | The murder of a curator at the Louvre reveals a sinister plot to uncover a secret that has been protected since the days of Christ. Only the victim's granddaughter and Robert Langdon, a famed symbologist, can untangle the clues he left behind. The two become both suspects and detectives searching for not only the murderer but also the stunning secret of the ages he was charged to protect.
+critics_consensus  | What makes Dan Brown's novel a best seller is evidently not present in this dull and bloated movie adaptation of The Da Vinci Code.
+rating             | PG-13
+in_theaters_date   | 2006-05-19
+on_streaming_date  | 2006-11-14
+runtime_in_minutes | 149
+tomatometer_status | Rotten
+tomatometer_rating | 25.00
+tomatometer_count  | 228
+audience_rating    | 57.00
+audience_count     | 761284
+genres             | {"Action & Adventure",Drama,"Mystery & Suspense"}
+writers            | {"Akiva Goldsman"}
+actors             | {"Aewia Huillet","Agathe Natanson","Alfred Molina","André Lillis","Andrew Clark","Andy Robb","Audrey Tautou","Brock Little","Charlotte Graham","Clive Carter","Crisian Emanuel","Daisy Doidge-Hill","Dan Tondowski","David Bark-Jones","David Bertrand","David Saracino","Daz Parker","Denis Podalydès","Dez Drummond","Eglantine Rembauville","Etienne Chicot","Fausto Maria Sciarappa","Francesco Carnelutti","Garance Mazureck","Harry Taylor","Hugh Marsh","Hugh Mitchell","Ian McKellen","Jean-Pierre Marielle","Jean Reno","Jean-Yves Berteloot","Joe Grossi","Jürgen Prochnow","Lilli Ella Kelleher","Lionel Guy-Bremond","Maggie McEwan","Marie-Françoise Audollent","Mario Vernazza","Mark Roper","Matthew Butler","Michael Bertenshaw","Nick Glennie-Smith","Paul Bettany","Peter Pedrero","Rachael Black","Richard Harvey","Rita Davies","Roland John-Leopoldie","Roland Menou","Sam Mancuso","Sarah Wildor","Serretta Wilson","Seth Gabel","Tina Maskell","Tom Barker","Tom Hanks","Tonio Descanvelle","Xavier De Guillebon","Yves Aubert"}
+studios            | {"Sony Pictures"}
+directors          | {"Ron Howard"}

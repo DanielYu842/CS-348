@@ -126,14 +126,12 @@ def search_movies(
                 WHERE 1=1
                 """
                 
-                # Add filter conditions
                 params = []
                 
                 if title:
                     query += " AND m.title ILIKE %s"
                     params.append(f"%{title}%")
                 
-                # For genres, require ALL to match
                 if genres:
                     for genre in genres:
                         query += """ 
@@ -147,7 +145,6 @@ def search_movies(
                         """
                         params.append(f"%{genre}%")
                 
-                # For writers, require ALL to match
                 if writers:
                     for writer in writers:
                         query += """ 
@@ -161,7 +158,6 @@ def search_movies(
                         """
                         params.append(f"%{writer}%")
                 
-                # For actors, require ALL to match
                 if actors:
                     for actor in actors:
                         query += """ 
@@ -183,7 +179,6 @@ def search_movies(
                     query += " AND m.rating ~* %s"
                     params.append(rating)
 
-                # For studios, require ALL to match
                 if studios:
                     for studio in studios:
                         query += """ 
@@ -196,8 +191,7 @@ def search_movies(
                         )
                         """
                         params.append(f"%{studio}%")
-
-                # For directors, require ALL to match
+                
                 if directors:
                     for director in directors:
                         query += """ 
@@ -224,7 +218,7 @@ def search_movies(
                 
                 cur.execute(query, params)
                 rows = cur.fetchall()
-                
+
                 return {
                     "count": len(rows),
                     "results": rows
