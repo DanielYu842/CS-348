@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from datetime import date
 
 app = FastAPI()
-update_tables = False
+update_tables = True
 
 def setup_database():
     conn = get_db_connection()
