@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 import psycopg2
 from typing import Optional, List
 from queries.create_tables import CREATE_TABLES_SQL
@@ -92,114 +92,104 @@ def search_comments_by_movie_id(movie_id: int):
 @app.get("/movies/search")
 def search_movies(
     title: Optional[str] = None,
-    genres: Optional[List[str]] = None,
-    writers: Optional[List[str]] = None,
-    actors: Optional[List[str]] = None,
-    studios: Optional[List[str]] = None,
-    directors: Optional[List[str]] = None
+    genres: Optional[List[str]] = Query(None),
+    writers: Optional[List[str]] = Query(None),
+    actors: Optional[List[str]] = Query(None),
+    studios: Optional[List[str]] = Query(None),
+    directors: Optional[List[str]] = Query(None)
 ):
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Build base query
                 query = """
-                    WITH matched_movies AS (
-                        SELECT DISTINCT m.*
-                        FROM Movie m
-                        LEFT JOIN MovieGenre mg ON m.movie_id = mg.movie_id
-                        LEFT JOIN Genre g ON mg.genre_id = g.genre_id
-                        LEFT JOIN MovieWriter mw ON m.movie_id = mw.movie_id
-                        LEFT JOIN Writer w ON mw.writer_id = w.writer_id
-                        LEFT JOIN MovieActor ma ON m.movie_id = ma.movie_id
-                        LEFT JOIN Actor a ON ma.actor_id = a.actor_id
-                        LEFT JOIN MovieStudio ms ON m.movie_id = ms.movie_id
-                        LEFT JOIN Studio s ON ms.studio_id = s.studio_id
-                        LEFT JOIN MovieDirector md ON m.movie_id = md.movie_id
-                        LEFT JOIN Director d ON md.director_id = d.director_id
-                        WHERE 1=1
+                SELECT 
+                    m.*,
+                    ARRAY_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL) as genres,
+                    ARRAY_AGG(DISTINCT w.name) FILTER (WHERE w.name IS NOT NULL) as writers,
+                    ARRAY_AGG(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL) as actors,
+                    ARRAY_AGG(DISTINCT s.name) FILTER (WHERE s.name IS NOT NULL) as studios,
+                    ARRAY_AGG(DISTINCT d.name) FILTER (WHERE d.name IS NOT NULL) as directors
+                FROM Movie m
+                LEFT JOIN MovieGenre mg ON m.movie_id = mg.movie_id
+                LEFT JOIN Genre g ON mg.genre_id = g.genre_id
+                LEFT JOIN MovieWriter mw ON m.movie_id = mw.movie_id
+                LEFT JOIN Writer w ON mw.writer_id = w.writer_id
+                LEFT JOIN MovieActor ma ON m.movie_id = ma.movie_id
+                LEFT JOIN Actor a ON ma.actor_id = a.actor_id
+                LEFT JOIN MovieStudio ms ON m.movie_id = ms.movie_id
+                LEFT JOIN Studio s ON ms.studio_id = s.studio_id
+                LEFT JOIN MovieDirector md ON m.movie_id = md.movie_id
+                LEFT JOIN Director d ON md.director_id = d.director_id
+                WHERE 1=1
                 """
+                
+                # Add filter conditions
                 params = []
-
+                conditions = []
+                
                 if title:
-                    query += " AND m.title ~* %s"
-                    params.append(title)
-
+                    conditions.append("m.title ILIKE %s")
+                    params.append(f"%{title}%")
+                
                 if genres:
-                    genre_conditions = []
+                    genre_placeholders = []
                     for genre in genres:
-                        genre_conditions.append("g.name ~* %s")
-                        params.append(genre)
-                    if genre_conditions:
-                        query += f" AND ({' OR '.join(genre_conditions)})"
-
+                        genre_placeholders.append("%s")
+                        params.append(f"%{genre}%")
+                    conditions.append(f"EXISTS (SELECT 1 FROM MovieGenre mg2 JOIN Genre g2 ON mg2.genre_id = g2.genre_id WHERE mg2.movie_id = m.movie_id AND g2.name ILIKE ANY(ARRAY[{', '.join(genre_placeholders)}]))")
+                
                 if writers:
-                    writer_conditions = []
+                    writer_placeholders = []
                     for writer in writers:
-                        writer_conditions.append("w.name ~* %s")
-                        params.append(writer)
-                    if writer_conditions:
-                        query += f" AND ({' OR '.join(writer_conditions)})"
-
+                        writer_placeholders.append("%s")
+                        params.append(f"%{writer}%")
+                    conditions.append(f"EXISTS (SELECT 1 FROM MovieWriter mw2 JOIN Writer w2 ON mw2.writer_id = w2.writer_id WHERE mw2.movie_id = m.movie_id AND w2.name ILIKE ANY(ARRAY[{', '.join(writer_placeholders)}]))")
+                
                 if actors:
-                    actor_conditions = []
+                    actor_placeholders = []
                     for actor in actors:
-                        actor_conditions.append("a.name ~* %s")
-                        params.append(actor)
-                    if actor_conditions:
-                        query += f" AND ({' OR '.join(actor_conditions)})"
-
+                        actor_placeholders.append("%s")
+                        params.append(f"%{actor}%")
+                    conditions.append(f"EXISTS (SELECT 1 FROM MovieActor ma2 JOIN Actor a2 ON ma2.actor_id = a2.actor_id WHERE ma2.movie_id = m.movie_id AND a2.name ILIKE ANY(ARRAY[{', '.join(actor_placeholders)}]))")
+                
                 if studios:
-                    studio_conditions = []
+                    studio_placeholders = []
                     for studio in studios:
-                        studio_conditions.append("s.name ~* %s")
-                        params.append(studio)
-                    if studio_conditions:
-                        query += f" AND ({' OR '.join(studio_conditions)})"
-
+                        studio_placeholders.append("%s")
+                        params.append(f"%{studio}%")
+                    conditions.append(f"EXISTS (SELECT 1 FROM MovieStudio ms2 JOIN Studio s2 ON ms2.studio_id = s2.studio_id WHERE ms2.movie_id = m.movie_id AND s2.name ILIKE ANY(ARRAY[{', '.join(studio_placeholders)}]))")
+                
                 if directors:
-                    director_conditions = []
+                    director_placeholders = []
                     for director in directors:
-                        director_conditions.append("d.name ~* %s")
-                        params.append(director)
-                    if director_conditions:
-                        query += f" AND ({' OR '.join(director_conditions)})"
-
+                        director_placeholders.append("%s")
+                        params.append(f"%{director}%")
+                    conditions.append(f"EXISTS (SELECT 1 FROM MovieDirector md2 JOIN Director d2 ON md2.director_id = d2.director_id WHERE md2.movie_id = m.movie_id AND d2.name ILIKE ANY(ARRAY[{', '.join(director_placeholders)}]))")
+                
+                # Add conditions to query if any exist
+                if conditions:
+                    query += " AND " + " AND ".join(conditions)
+                
+                # Add group by and ordering
                 query += """
-                    )
-                    SELECT 
-                        m.*,
-                        ARRAY_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL) as genres,
-                        ARRAY_AGG(DISTINCT w.name) FILTER (WHERE w.name IS NOT NULL) as writers,
-                        ARRAY_AGG(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL) as actors,
-                        ARRAY_AGG(DISTINCT s.name) FILTER (WHERE s.name IS NOT NULL) as studios,
-                        ARRAY_AGG(DISTINCT d.name) FILTER (WHERE d.name IS NOT NULL) as directors
-                    FROM matched_movies m
-                    LEFT JOIN MovieGenre mg ON m.movie_id = mg.movie_id
-                    LEFT JOIN Genre g ON mg.genre_id = g.genre_id
-                    LEFT JOIN MovieWriter mw ON m.movie_id = mw.movie_id
-                    LEFT JOIN Writer w ON mw.writer_id = w.writer_id
-                    LEFT JOIN MovieActor ma ON m.movie_id = ma.movie_id
-                    LEFT JOIN Actor a ON ma.actor_id = a.actor_id
-                    LEFT JOIN MovieStudio ms ON m.movie_id = ms.movie_id
-                    LEFT JOIN Studio s ON ms.studio_id = s.studio_id
-                    LEFT JOIN MovieDirector md ON m.movie_id = md.movie_id
-                    LEFT JOIN Director d ON md.director_id = d.director_id
-                    GROUP BY m.movie_id, m.title, m.info, m.critics_consensus, 
-                             m.rating, m.in_theaters_date, m.on_streaming_date,
-                             m.runtime_in_minutes, m.tomatometer_status,
-                             m.tomatometer_rating, m.tomatometer_count,
-                             m.audience_rating, m.audience_count
-                    ORDER BY m.title 
-                    LIMIT 50
+                GROUP BY m.movie_id, m.title, m.info, m.critics_consensus, 
+                         m.rating, m.in_theaters_date, m.on_streaming_date,
+                         m.runtime_in_minutes, m.tomatometer_status,
+                         m.tomatometer_rating, m.tomatometer_count,
+                         m.audience_rating, m.audience_count
+                ORDER BY m.title 
+                LIMIT 50
                 """
-
+                
                 cur.execute(query, params)
                 rows = cur.fetchall()
-
+                
                 return {
                     "count": len(rows),
                     "results": rows
                 }
-
+                
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
