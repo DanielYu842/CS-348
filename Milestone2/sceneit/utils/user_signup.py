@@ -12,12 +12,16 @@ def user_signup(email: str, username: str, password: str):
     # Check if the email or username already exists
     search_email_query = "SELECT COUNT(*) FROM Users WHERE email = %s"
     search_username_query = "SELECT COUNT(*) FROM Users WHERE username = %s"
+    total_users_query = "SELECT COUNT(*) FROM Users"
     
     cur.execute(search_email_query, (email,))
     email_count = cur.fetchone()[0]
     
     cur.execute(search_username_query, (username,))
     username_count = cur.fetchone()[0]
+
+    cur.execute(total_users_query)
+    total = cur.fetchone()[0]
     
     if email_count > 0:
         cur.close()
@@ -30,7 +34,7 @@ def user_signup(email: str, username: str, password: str):
         return {"success": False, "message": "Username already exists."}
     
     # Insert the new user
-    cur.execute(INSERT_USER_SQL, (username, email, pwd_hash(password)))
+    cur.execute(INSERT_USER_SQL, (total, username, email, pwd_hash(password)))
     conn.commit()
     
     cur.close()
