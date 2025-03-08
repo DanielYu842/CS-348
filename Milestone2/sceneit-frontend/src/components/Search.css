@@ -1,71 +1,166 @@
-.search-page {
-    background-color: #141414;
-    color: white;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
-  }
-  
-  .header {
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: rgba(20, 20, 20, 0.9);
-    z-index: 1000;
-  }
-  
-  .logo {
-    color: #e50914;
-    margin: 0;
-    font-size: 2rem;
-  }
-  
-  .search-container {
-    padding: 80px 20px 20px;
-  }
-  
-  .search-input {
-    width: 100%;
-    max-width: 600px;
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #333;
-    color: white;
-    font-size: 1rem;
-  }
-  
-  .search-input:focus {
-    outline: none;
-    background-color: #444;
-  }
-  
-  /* Customize ag-theme-alpine to match your dark theme */
-  .ag-theme-alpine {
-    --ag-grid-size: 6px;
-    --ag-header-background-color: #181818;
-    --ag-odd-row-background-color: #1e1e1e;
-    --ag-even-row-background-color: #1e1e1e; /* Match odd rows for consistency */
-    --ag-background-color: #141414; /* Match the page background */
-    --ag-foreground-color: white; /* Set text color to white */
-    --ag-header-foreground-color: white; /* Header text color */
-    --ag-row-hover-color: #2a2a2a; /* Darker hover effect */
-    --ag-selected-row-background-color: #2a2a2a; /* Selected row style */
-  }
-  
-  /* Ensure no white background overrides */
-  .ag-theme-alpine .ag-row {
-    background-color: transparent !important; /* Override any white background */
-    color: white !important; /* Ensure text is white */
-  }
-  
-  /* Optional: Adjust header styling if needed */
-  .ag-theme-alpine .ag-header {
-    border-bottom: 1px solid #333;
-  }
-  
-  /* Optional: Adjust pagination text */
-  .ag-theme-alpine .ag-paging-panel {
-    color: white;
-  }
+.explore {
+  background-color: #141414;
+  color: white;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: rgba(20, 20, 20, 0.9);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #e50914;
+  margin: 0;
+  font-size: 2rem;
+}
+
+.content {
+  padding: 80px 20px 20px;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 800px;
+  /* margin-bottom: 20px; */
+  margin: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1; 
+  min-width: 200px;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  width: 100%; 
+}
+
+.form-group input:focus {
+  outline: none;
+  background-color: #444;
+}
+
+.search-button {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: fit-content;
+}
+
+.search-button:hover {
+  background-color: #f40612;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: #181818;
+  width: 800px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.modal-info {
+  padding: 20px;
+}
+
+.rating {
+  color: #46d369;
+  font-weight: bold;
+}
+
+.genre {
+  color: #777;
+  margin: 10px 0;
+}
+
+.description {
+  margin: 15px 0;
+}
+
+.play-button {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.play-button:hover {
+  background-color: #f40612;
+}

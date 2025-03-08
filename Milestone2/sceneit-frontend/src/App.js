@@ -2,6 +2,7 @@ import './App.css';
 import { API_ENDPOINT } from "./config";
 import { useEffect, useState } from 'react';
 import Explore from './components/Explore';
+import MasterTable from './components/MasterTable';
 import Search from './components/Search';
 
 function App() {
@@ -44,7 +45,13 @@ function App() {
           Explore
         </button>
         <button 
-          onClick={() => setActiveScreen('search')}
+          onClick={() => setActiveScreen('masterTable')}
+          className={activeScreen === 'masterTable' ? 'active' : ''}
+        >
+          Master Table
+        </button>
+        <button 
+          onClick={() => setActiveScreen('Search')}
           className={activeScreen === 'search' ? 'active' : ''}
         >
           Search
@@ -52,7 +59,8 @@ function App() {
       </nav>
 
       {activeScreen === 'explore' && <Explore />}
-      {activeScreen === 'search' && <Search />}
+      {activeScreen === 'masterTable' && <MasterTable />}
+      {activeScreen === 'Search' && <Search />}
     </div> 
   );
 }
