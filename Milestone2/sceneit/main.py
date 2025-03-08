@@ -181,6 +181,48 @@ def create_review(review: ReviewCreate):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+class SetupType(str, Enum):
+    local = "local"
+    prod = "prod"
+
+@app.post("/seed")
+def setup_database(setup_type: SetupType):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    sample_size = 50
+    if setup_type == SetupType.prod:
+        sample_size = 1000000000
+    
+    if update_tables:
+        print("Dropping all tables")
+        cur.execute("Drop table if exists Movie cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
+    cur.execute(CREATE_TABLES_SQL)
+    conn.commit()
+    insert_movies(MOVIES_CSV_PATH, sample_size)
+    insert_users(USERS_CSV_PATH, sample_size)
+    insert_reviews(REVIEWS_CSV_PATH, sample_size)
+    create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
+
+    repeats = []
+    for _ in range(50):
+        id = random.randint(1, 10)
+        rid = random.randint(1, 10)
+        data =LikeCreate(
+            user_id=id,  # user_id from 1 to 10
+            review_id=rid,  # review_id from 1 to 10
+            comment_id=None  # comment_id is set to None
+        )
+        if (id,rid) in repeats: continue
+        repeats.append((id,rid))
+        like_item(data)
+
+
+    cur.close()
+    conn.close()
+
+    return {"message": "Database setup successful"}
+
 # Request/Response Models
 class MovieCreate(BaseModel):
     title: str

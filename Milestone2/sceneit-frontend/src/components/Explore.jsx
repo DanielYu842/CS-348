@@ -1,4 +1,3 @@
-// components/Explore.jsx
 import React, { useState, useEffect } from 'react';
 import './Explore.css';
 import { API_ENDPOINT } from '../config';
@@ -17,7 +16,6 @@ const Explore = () => {
     users: true
   });
 
-  // Fetch data for all sections
   useEffect(() => {
     const fetchData = async (endpoint, setter, loadingKey) => {
       try {
@@ -69,7 +67,6 @@ const Explore = () => {
       <header className="header">
         <h1 className="logo">SceneIt</h1>
       </header>
-
       <div className="content">
         {renderRow('Top Reviewed Movies', topReviewedMovies, 'topReviewed')}
         {renderRow('Worst Rated Movies', worstMovies, 'worst')}
