@@ -15,6 +15,7 @@ import psycopg2.extras
 from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 from utils.db import get_db_connection
+from datetime import datetime
 
 app = FastAPI()
 
@@ -517,6 +518,45 @@ def login_user(user: UserLogin):
                     return {"success": False, "message": "Invalid credentials"}
 
                 return {"success": True, "user": {"user_id": db_user["user_id"], "username": db_user["username"], "email": db_user["email"]}}
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+class ReviewCreate(BaseModel):
+    movie_id: int
+    user_id: int
+    title: str
+    content: str
+    rating: float  # Rating should be between 0 and 100
+
+@app.post("/reviews/")
+def create_review(review: ReviewCreate):
+    if not (0 <= review.rating <= 100):
+        raise HTTPException(status_code=400, detail="Rating must be between 0 and 100")
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Check if movie exists
+                cur.execute("SELECT movie_id FROM Movie WHERE movie_id = %s", (review.movie_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Movie not found")
+
+                # Check if user exists
+                cur.execute("SELECT user_id FROM Users WHERE user_id = %s", (review.user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                # Insert the review
+                cur.execute("""
+                    INSERT INTO Reviews (movie_id, user_id, title, content, rating, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
+                    RETURNING review_id, movie_id, user_id, title, content, rating, created_at, updated_at
+                """, (review.movie_id, review.user_id, review.title, review.content, review.rating))
+
+                new_review = cur.fetchone()
+                return new_review
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
