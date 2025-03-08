@@ -560,3 +560,36 @@ def create_review(review: ReviewCreate):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+class CommentCreate(BaseModel):
+    review_id: int
+    user_id: int
+    content: str
+
+@app.post("/comments/")
+def create_comment(comment: CommentCreate):
+    if not comment.content.strip():
+        raise HTTPException(status_code=400, detail="Comment content cannot be empty")
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT review_id FROM Reviews WHERE review_id = %s", (comment.review_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Review not found")
+
+                cur.execute("SELECT user_id FROM Users WHERE user_id = %s", (comment.user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                cur.execute("""
+                    INSERT INTO Comments (review_id, user_id, content, created_at, updated_at)
+                    VALUES (%s, %s, %s, NOW(), NOW())
+                    RETURNING comment_id, review_id, user_id, content, created_at, updated_at
+                """, (comment.review_id, comment.user_id, comment.content))
+
+                new_comment = cur.fetchone()
+                return new_comment
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
