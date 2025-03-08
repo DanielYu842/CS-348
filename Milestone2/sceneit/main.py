@@ -19,6 +19,8 @@ from datetime import datetime
 import random
 
 update_tables = True
+from enum import Enum
+
 
 app = FastAPI()
 
@@ -148,7 +150,7 @@ def setup_database():
     create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
 
     repeats = []
-    for _ in range(1):
+    for _ in range(50):
         id = random.randint(1, 10)
         rid = random.randint(1, 10)
         data =LikeCreate(
@@ -759,6 +761,137 @@ def get_top_reviewed_movies():
                     "count": len(rows),
                     "results": rows
                 }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@app.get("/users/top_likes")
+def get_top_users_by_likes():
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                query = """
+                SELECT 
+                    u.username, 
+                    COUNT(*) AS total_likes
+                FROM Users u
+                inner join Likes l ON u.user_id = l.user_id
+                GROUP BY u.user_id
+                ORDER BY total_likes DESC
+                LIMIT 10;
+                """
+                cur.execute(query)
+                rows = cur.fetchall()
+
+                return {
+                    "count": len(rows),
+                    "results": rows
+                }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+
+@app.get("/reviews/{review_id}")
+def get_review_with_comments(review_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Fetch review details along with like count
+                cur.execute("""
+                    SELECT 
+                        r.review_id, r.movie_id, r.user_id, r.title, r.content, r.rating, 
+                        r.created_at, r.updated_at,
+                        u.username, u.email,
+                        COALESCE(like_count.likes, 0) AS like_count
+                    FROM Reviews r
+                    JOIN Users u ON r.user_id = u.user_id
+                    LEFT JOIN (
+                        SELECT review_id, COUNT(*) AS likes
+                        FROM Likes 
+                        WHERE review_id IS NOT NULL
+                        GROUP BY review_id
+                    ) like_count ON r.review_id = like_count.review_id
+                    WHERE r.review_id = %s
+                """, (review_id,))
+                
+                review = cur.fetchone()
+                
+                if not review:
+                    raise HTTPException(status_code=404, detail="Review not found")
+
+                # Fetch all comments with like count for each comment
+                cur.execute("""
+                    SELECT 
+                        c.comment_id, c.review_id, c.user_id, c.content, c.created_at, c.updated_at,
+                        u.username, u.email,
+                        COALESCE(like_count.likes, 0) AS like_count
+                    FROM Comments c
+                    JOIN Users u ON c.user_id = u.user_id
+                    LEFT JOIN (
+                        SELECT comment_id, COUNT(*) AS likes
+                        FROM Likes 
+                        WHERE comment_id IS NOT NULL
+                        GROUP BY comment_id
+                    ) like_count ON c.comment_id = like_count.comment_id
+                    WHERE c.review_id = %s
+                    ORDER BY c.created_at ASC
+                """, (review_id,))
+
+                comments = cur.fetchall()
+
+                return {
+                    "review": review,
+                    "comments": comments
+                }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+class ReviewSortOptions(str, Enum):
+    created_at = "created_at"
+    most_comments = "most_comments"
+
+
+@app.get("/reviews/")
+def get_all_reviews(sort_by: ReviewSortOptions = ReviewSortOptions.created_at):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Base query to fetch reviews with like and comment count
+                query = """
+                    SELECT 
+                        r.review_id, r.movie_id, r.user_id, r.title, r.content, r.rating, 
+                        r.created_at, r.updated_at,
+                        u.username, u.email,
+                        COALESCE(like_count.likes, 0) AS like_count,
+                        COALESCE(comment_count.comments, 0) AS comment_count
+                    FROM Reviews r
+                    JOIN Users u ON r.user_id = u.user_id
+                    LEFT JOIN (
+                        SELECT review_id, COUNT(*) AS likes
+                        FROM Likes 
+                        WHERE review_id IS NOT NULL
+                        GROUP BY review_id
+                    ) like_count ON r.review_id = like_count.review_id
+                    LEFT JOIN (
+                        SELECT review_id, COUNT(*) AS comments
+                        FROM Comments 
+                        GROUP BY review_id
+                    ) comment_count ON r.review_id = comment_count.review_id
+                """
+
+                if sort_by == ReviewSortOptions.created_at:
+                    query += " ORDER BY r.created_at DESC"
+                elif sort_by == ReviewSortOptions.most_comments:
+                    query += " ORDER BY COALESCE(comment_count.comments, 0) DESC, r.created_at DESC"
+
+                cur.execute(query)
+                reviews = cur.fetchall()
+
+                return {"count": len(reviews), "reviews": reviews}
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

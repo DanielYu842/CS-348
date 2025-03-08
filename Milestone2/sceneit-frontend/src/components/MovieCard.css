@@ -1,0 +1,36 @@
+.movie-card {
+  background-color: #1e1e1e;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+  text-align: center;
+}
+
+.movie-card:hover {
+  transform: scale(1.05); 
+}
+
+.movie-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 4px 4px 0 0;
+}
+
+.movie-no-image {
+  width: 100%;
+  height: 300px;
+  background-color: black;
+  border-radius: 4px 4px 0 0;
+}
+
+.movie-title {
+  font-size: 0.9rem;
+  margin: 5px 0;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+}
