@@ -520,8 +520,57 @@ def update_movie(movie_id: int, movie: MovieUpdate):
                 cur.execute("DELETE FROM MovieStudio WHERE movie_id = %s", (movie_id,))
                 cur.execute("DELETE FROM MovieDirector WHERE movie_id = %s", (movie_id,))
 
-                # Insert new relationships (same code as create endpoint)
-                # ... (insert code for genres, writers, actors, studios, directors) ...
+                # Insert related entities and relationships
+                for genre in movie.genres:
+                    cur.execute("INSERT INTO Genre (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING genre_id", (genre,))
+                    result = cur.fetchone()
+                    if result:
+                        genre_id = result['genre_id']
+                    else:
+                        cur.execute("SELECT genre_id FROM Genre WHERE name = %s", (genre,))
+                        genre_id = cur.fetchone()['genre_id']
+                    cur.execute("INSERT INTO MovieGenre (movie_id, genre_id) VALUES (%s, %s)", (movie_id, genre_id))
+
+                # Similar process for writers, actors, studios, directors
+                for writer in movie.writers:
+                    cur.execute("INSERT INTO Writer (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING writer_id", (writer,))
+                    result = cur.fetchone()
+                    if result:
+                        writer_id = result['writer_id']
+                    else:
+                        cur.execute("SELECT writer_id FROM Writer WHERE name = %s", (writer,))
+                        writer_id = cur.fetchone()['writer_id']
+                    cur.execute("INSERT INTO MovieWriter (movie_id, writer_id) VALUES (%s, %s)", (movie_id, writer_id))
+
+                for actor in movie.actors:
+                    cur.execute("INSERT INTO Actor (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING actor_id", (actor,))
+                    result = cur.fetchone()
+                    if result:
+                        actor_id = result['actor_id']
+                    else:
+                        cur.execute("SELECT actor_id FROM Actor WHERE name = %s", (actor,))
+                        actor_id = cur.fetchone()['actor_id']
+                    cur.execute("INSERT INTO MovieActor (movie_id, actor_id) VALUES (%s, %s)", (movie_id, actor_id))
+
+                for studio in movie.studios:
+                    cur.execute("INSERT INTO Studio (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING studio_id", (studio,))
+                    result = cur.fetchone()
+                    if result:
+                        studio_id = result['studio_id']
+                    else:
+                        cur.execute("SELECT studio_id FROM Studio WHERE name = %s", (studio,))
+                        studio_id = cur.fetchone()['studio_id']
+                    cur.execute("INSERT INTO MovieStudio (movie_id, studio_id) VALUES (%s, %s)", (movie_id, studio_id))
+
+                for director in movie.directors:
+                    cur.execute("INSERT INTO Director (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING director_id", (director,))
+                    result = cur.fetchone()
+                    if result:
+                        director_id = result['director_id']
+                    else:
+                        cur.execute("SELECT director_id FROM Director WHERE name = %s", (director,))
+                        director_id = cur.fetchone()['director_id']
+                    cur.execute("INSERT INTO MovieDirector (movie_id, director_id) VALUES (%s, %s)", (movie_id, director_id))
 
                 conn.commit()
                 return get_movie(movie_id)
