@@ -17,9 +17,14 @@ from passlib.context import CryptContext
 from utils.db import get_db_connection
 from datetime import datetime
 import random
+from utils.review_info import get_review_info
+from utils.user_profile import review_ids_from_user
+from enum import Enum
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 update_tables = True
-from enum import Enum
 
 
 app = FastAPI()
@@ -134,6 +139,7 @@ def create_review(review: ReviewCreate):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+@app.post("/seed")
 def setup_database():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -166,7 +172,7 @@ def setup_database():
     cur.close()
     conn.close()
 
-setup_database()
+    return {"message": "Database setup successful"}
 
 # Request/Response Models
 class MovieCreate(BaseModel):
@@ -694,10 +700,6 @@ def get_movies_by_rating(best: bool = True):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-    
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
@@ -918,11 +920,9 @@ def get_review_with_comments(review_id: int):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-
 class ReviewSortOptions(str, Enum):
     created_at = "created_at"
     most_comments = "most_comments"
-
 
 @app.get("/reviews/")
 def get_all_reviews(sort_by: ReviewSortOptions = ReviewSortOptions.created_at):
