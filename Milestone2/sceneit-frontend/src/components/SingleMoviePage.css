@@ -1,0 +1,103 @@
+.single-movie-page {
+    background-color: #141414;
+    color: white;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  .header {
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(20, 20, 20, 0.9);
+    z-index: 1000;
+  }
+  
+  .logo {
+    color: #e50914;
+    margin: 0;
+    font-size: 2rem;
+  }
+  
+  .content {
+    padding: 80px 20px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .back-button {
+    background-color: #e50914;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  
+  .back-button:hover {
+    background-color: #f40612;
+  }
+  
+  .movie-details {
+    padding: 20px;
+  }
+  
+  .movie-details h1 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 2rem;
+  }
+  
+  .movie-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    color: #777;
+  }
+  
+  .rating {
+    color: #46d369;
+    font-weight: bold;
+  }
+  
+  .runtime, .release-date {
+    color: #777;
+  }
+  
+  .description {
+    margin: 15px 0;
+    line-height: 1.5;
+    color: #ccc;
+  }
+  
+  .critics-audience, .details, .cast {
+    margin-bottom: 30px;
+  }
+  
+  .critics-audience h2, .details h2, .cast h2 {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+  }
+  
+  .critics-audience p, .details p {
+    margin: 10px 0;
+    line-height: 1.5;
+    color: #ccc;
+  }
+  
+  .cast ul {
+    list-style-type: none;
+    padding: 0;
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+  }
+  
+  .cast li {
+    margin: 5px 0;
+    color: #ccc;
+  }

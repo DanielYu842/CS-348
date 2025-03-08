@@ -1,12 +1,15 @@
 import './App.css';
 import { API_ENDPOINT } from "./config";
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Explore from './components/Explore';
 import MasterTable from './components/MasterTable';
 import Search from './components/Search';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import SingleMoviePage from './components/SingleMoviePage';
 
+// Main App component
 function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -19,18 +22,15 @@ function App() {
     
     fetch(API_ENDPOINT)
       .then(response => {
-        console.log('Response status:', response.status);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
       })
       .then(data => {
-        console.log('Received data:', data);
         setData(data);
       })
       .catch(error => {
-        console.error('Fetch error:', error);
         setError(error.message);
       })
       .finally(() => {
@@ -40,7 +40,7 @@ function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    setActiveScreen('explore')
+    setActiveScreen('explore');
   };
 
   const handleLogout = () => {
@@ -48,51 +48,78 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  return (
-    <div className="App">
-      <nav className="navigation">
-        <button 
-          onClick={() => setActiveScreen('explore')}
-          className={activeScreen === 'explore' ? 'active' : ''}
-        >
-          Explore
-        </button>
-        <button 
-          onClick={() => setActiveScreen('masterTable')}
-          className={activeScreen === 'masterTable' ? 'active' : ''}
-        >
-          Master Table
-        </button>
-        <button 
-          onClick={() => setActiveScreen('Search')}
-          className={activeScreen === 'search' ? 'active' : ''}
-        >
-          Search
-        </button>
-        {!isAuthenticated && 
-        <button 
-          onClick={() => setActiveScreen('login')}
-          className={activeScreen === 'login' ? 'active' : ''}
-        >
-          Log In
-        </button>}
-        {!isAuthenticated && 
-        <button 
-          onClick={() => setActiveScreen('signup')}
-          className={activeScreen === 'signup' ? 'active' : ''}
-        >
-          Sign Up
-        </button>}
-        {isAuthenticated && <button onClick={handleLogout}>Logout</button>}
-      </nav>
+  // Main content component for the root route
+  const MainContent = () => {
+    return (
+      <div className="App">
+        <nav className="navigation">
+          <Link to="/">
+            <button 
+              onClick={() => setActiveScreen('explore')}
+              className={activeScreen === 'explore' ? 'active' : ''}
+            >
+              Explore
+            </button>
+          </Link>
+          <Link to="/">
+            <button 
+              onClick={() => setActiveScreen('masterTable')}
+              className={activeScreen === 'masterTable' ? 'active' : ''}
+            >
+              Master Table
+            </button>
+          </Link>
+          <Link to="/">
+            <button 
+              onClick={() => setActiveScreen('search')}
+              className={activeScreen === 'search' ? 'active' : ''}
+            >
+              Search
+            </button>
+          </Link>
+          {!isAuthenticated && (
+            <Link to="/">
+              <button 
+                onClick={() => setActiveScreen('login')}
+                className={activeScreen === 'login' ? 'active' : ''}
+              >
+                Log In
+              </button>
+            </Link>
+          )}
+          {!isAuthenticated && (
+            <Link to="/">
+              <button 
+                onClick={() => setActiveScreen('signup')}
+                className={activeScreen === 'signup' ? 'active' : ''}
+              >
+                Sign Up
+              </button>
+            </Link>
+          )}
+          {isAuthenticated && <button onClick={handleLogout}>Logout</button>}
+        </nav>
 
-      {activeScreen === 'explore' && <Explore />}
-      {activeScreen === 'masterTable' && <MasterTable />}
-      {activeScreen === 'Search' && <Search />}
-      {activeScreen === 'search' && <Search />}
-      {activeScreen === 'login' && <Login onLogin={handleLogin} onSignup={() => setActiveScreen('signup')} />} 
-      {activeScreen === 'signup' && <Signup onSignup={() => setActiveScreen('login')} />} 
-    </div> 
+        {activeScreen === 'explore' && <Explore />}
+        {activeScreen === 'masterTable' && <MasterTable />}
+        {activeScreen === 'Search' && <Search />}
+        {activeScreen === 'search' && <Search />}
+        {activeScreen === 'login' && <Login onLogin={handleLogin} onSignup={() => setActiveScreen('signup')} />}
+        {activeScreen === 'signup' && <Signup onSignup={() => setActiveScreen('login')} />}
+      </div>
+    );
+  };
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainContent />} />
+        <Route 
+          path="/movie/:id" 
+          element={<SingleMoviePage />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
