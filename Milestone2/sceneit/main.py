@@ -686,3 +686,60 @@ def like_item(like: LikeCreate):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+
+@app.get("/movies_top_reviewed")
+def get_top_reviewed_movies():
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # query = """
+                # with groupedReviews as (
+                # select movie_id, count(*) as reviewCount from reviews group by movie_id order by reviewCount desc limit 10
+                # )
+
+                # select * from groupedReviews;
+                # """
+
+                query = f"""
+
+                with groupedReviews as (
+                select movie_id, count(*) as reviewCount from reviews group by movie_id order by reviewCount desc limit 10
+                )
+
+                SELECT 
+                    m.*,
+                    groupedReviews.reviewCount,
+                    ARRAY_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL) as genres,
+                    ARRAY_AGG(DISTINCT w.name) FILTER (WHERE w.name IS NOT NULL) as writers,
+                    ARRAY_AGG(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL) as actors,
+                    ARRAY_AGG(DISTINCT s.name) FILTER (WHERE s.name IS NOT NULL) as studios,
+                    ARRAY_AGG(DISTINCT d.name) FILTER (WHERE d.name IS NOT NULL) as directors
+                FROM Movie m
+                inner join groupedReviews on groupedReviews.movie_id = m.movie_id
+                LEFT JOIN MovieGenre mg ON m.movie_id = mg.movie_id
+                LEFT JOIN Genre g ON mg.genre_id = g.genre_id
+                LEFT JOIN MovieWriter mw ON m.movie_id = mw.movie_id
+                LEFT JOIN Writer w ON mw.writer_id = w.writer_id
+                LEFT JOIN MovieActor ma ON m.movie_id = ma.movie_id
+                LEFT JOIN Actor a ON ma.actor_id = a.actor_id
+                LEFT JOIN MovieStudio ms ON m.movie_id = ms.movie_id
+                LEFT JOIN Studio s ON ms.studio_id = s.studio_id
+                LEFT JOIN MovieDirector md ON m.movie_id = md.movie_id
+                LEFT JOIN Director d ON md.director_id = d.director_id
+                WHERE m.audience_rating IS NOT NULL
+                GROUP BY m.movie_id,groupedReviews.reviewCount
+                order by groupedReviews.reviewCount desc;
+                """
+                
+                cur.execute(query)
+                rows = cur.fetchall()
+
+                return {
+                    "count": len(rows),
+                    "results": rows
+                }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
