@@ -199,8 +199,11 @@ def setup_database(setup_type: SetupType):
         cur.execute("Drop table if exists Movie cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
     cur.execute(CREATE_TABLES_SQL)
     conn.commit()
+    print("inserting movie")
     insert_movies(MOVIES_CSV_PATH, sample_size)
+    print("inserting users")
     insert_users(USERS_CSV_PATH, sample_size)
+    print("inserting reviews")
     insert_reviews(REVIEWS_CSV_PATH, sample_size)
     create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
 

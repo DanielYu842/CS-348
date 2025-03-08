@@ -127,6 +127,7 @@ def insert_movies(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
     numMovies = len(movies) if IS_PRODUCTION else min(len(movies), sample_size)
 
     for movieIndex in range(numMovies):
+        print("adding movie", movieIndex)
         movie_attrs = movies[movieIndex]
         if Movie.movie_attrs_soft_check(movie_attrs):
             movie = Movie(movie_attrs)

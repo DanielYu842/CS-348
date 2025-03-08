@@ -1,0 +1,714 @@
+-[ RECORD 1 ]------+-------------------------------------------------------------
+movie_id           | 863
+title              | 1492: Conquest of Paradise
+rating             | PG-13
+in_theaters_date   | 1992-10-09
+on_streaming_date  | 2002-05-14
+runtime_in_minutes | 142
+-[ RECORD 2 ]------+-------------------------------------------------------------
+movie_id           | 871
+title              | 2001: A Space Odyssey
+rating             | G
+in_theaters_date   | 1968-04-03
+on_streaming_date  | 1998-08-25
+runtime_in_minutes | 139
+-[ RECORD 3 ]------+-------------------------------------------------------------
+movie_id           | 879
+title              | 21 Jump Street
+rating             | R
+in_theaters_date   | 2012-03-16
+on_streaming_date  | 2012-06-26
+runtime_in_minutes | 109
+-[ RECORD 4 ]------+-------------------------------------------------------------
+movie_id           | 881
+title              | 22 Jump Street
+rating             | R
+in_theaters_date   | 2014-06-13
+on_streaming_date  | 2014-11-18
+runtime_in_minutes | 110
+-[ RECORD 5 ]------+-------------------------------------------------------------
+movie_id           | 883
+title              | 24 Hour Party People
+rating             | R
+in_theaters_date   | 2002-08-09
+on_streaming_date  | 2003-01-21
+runtime_in_minutes | 113
+-[ RECORD 6 ]------+-------------------------------------------------------------
+movie_id           | 891
+title              | 2 Days in Paris
+rating             | R
+in_theaters_date   | 2007-08-10
+on_streaming_date  | 2008-02-05
+runtime_in_minutes | 86
+-[ RECORD 7 ]------+-------------------------------------------------------------
+movie_id           | 897
+title              | 300: Rise of an Empire
+rating             | R
+in_theaters_date   | 2014-03-07
+on_streaming_date  | 2014-06-24
+runtime_in_minutes | 103
+-[ RECORD 8 ]------+-------------------------------------------------------------
+movie_id           | 926
+title              | 5 Flights Up
+rating             | PG-13
+in_theaters_date   | 2015-05-08
+on_streaming_date  | 2015-07-07
+runtime_in_minutes | 92
+-[ RECORD 9 ]------+-------------------------------------------------------------
+movie_id           | 932
+title              | 8: The Mormon Proposition
+rating             | R
+in_theaters_date   | 2010-06-18
+on_streaming_date  | 2010-07-13
+runtime_in_minutes | 78
+-[ RECORD 10 ]-----+-------------------------------------------------------------
+movie_id           | 939
+title              | A Bigger Splash
+rating             | R
+in_theaters_date   | 2016-05-04
+on_streaming_date  | 2016-09-06
+runtime_in_minutes | 124
+-[ RECORD 11 ]-----+-------------------------------------------------------------
+movie_id           | 1026
+title              | Abraham Lincoln: Vampire Hunter
+rating             | R
+in_theaters_date   | 2012-06-22
+on_streaming_date  | 2012-10-23
+runtime_in_minutes | 105
+-[ RECORD 12 ]-----+-------------------------------------------------------------
+movie_id           | 940
+title              | A Bread Factory, Part One: For the Sake of Gold
+rating             | NR
+in_theaters_date   | 2018-10-26
+on_streaming_date  | 2019-09-24
+runtime_in_minutes | 122
+-[ RECORD 13 ]-----+-------------------------------------------------------------
+movie_id           | 942
+title              | A Cat in Paris
+rating             | PG
+in_theaters_date   | 2012-06-01
+on_streaming_date  | 2012-10-09
+runtime_in_minutes | 65
+-[ RECORD 14 ]-----+-------------------------------------------------------------
+movie_id           | 1031
+title              | Accepted
+rating             | PG-13
+in_theaters_date   | 2006-08-18
+on_streaming_date  | 2006-11-14
+runtime_in_minutes | 93
+-[ RECORD 15 ]-----+-------------------------------------------------------------
+movie_id           | 1032
+title              | Ace Ventura: Pet Detective
+rating             | PG-13
+in_theaters_date   | 1993-06-01
+on_streaming_date  | 1997-09-11
+runtime_in_minutes | 86
+-[ RECORD 16 ]-----+-------------------------------------------------------------
+movie_id           | 1038
+title              | Adam's Apples
+rating             | R
+in_theaters_date   | 2007-03-16
+on_streaming_date  | 2008-01-08
+runtime_in_minutes | 94
+-[ RECORD 17 ]-----+-------------------------------------------------------------
+movie_id           | 606
+title              | Adaptation
+rating             | R
+in_theaters_date   | 2002-12-06
+on_streaming_date  | 2003-05-20
+runtime_in_minutes | 114
+-[ RECORD 18 ]-----+-------------------------------------------------------------
+movie_id           | 949
+title              | A Dog's Purpose
+rating             | PG
+in_theaters_date   | 2017-01-27
+on_streaming_date  | 2017-05-02
+runtime_in_minutes | 120
+-[ RECORD 19 ]-----+-------------------------------------------------------------
+movie_id           | 2796
+title              | A Fistful of Dollars (Per un Pugno di Dollari)
+rating             | R
+in_theaters_date   | 1964-09-12
+on_streaming_date  | 2001-06-19
+runtime_in_minutes | 101
+-[ RECORD 20 ]-----+-------------------------------------------------------------
+movie_id           | 1065
+title              | After Love (L'économie du couple)
+rating             | NR
+in_theaters_date   | 2017-08-09
+on_streaming_date  | 2017-11-21
+runtime_in_minutes | 100
+-[ RECORD 21 ]-----+-------------------------------------------------------------
+movie_id           | 1070
+title              | Aftermath (Poklosie)
+rating             | NR
+in_theaters_date   | 2013-11-01
+on_streaming_date  | 2014-08-26
+runtime_in_minutes | 107
+-[ RECORD 22 ]-----+-------------------------------------------------------------
+movie_id           | 1074
+title              | Against the Ropes
+rating             | PG-13
+in_theaters_date   | 2004-02-20
+on_streaming_date  | 2004-07-13
+runtime_in_minutes | 110
+-[ RECORD 23 ]-----+-------------------------------------------------------------
+movie_id           | 957
+title              | A Glimpse Inside the Mind of Charles Swan III
+rating             | R
+in_theaters_date   | 2013-02-08
+on_streaming_date  | 2013-05-14
+runtime_in_minutes | 86
+-[ RECORD 24 ]-----+-------------------------------------------------------------
+movie_id           | 1083
+title              | Airplane!
+rating             | PG
+in_theaters_date   | 1980-07-02
+on_streaming_date  | 2000-10-24
+runtime_in_minutes | 88
+-[ RECORD 25 ]-----+-------------------------------------------------------------
+movie_id           | 1090
+title              | Alan Partridge
+rating             | R
+in_theaters_date   | 2014-04-04
+on_streaming_date  | 2014-06-10
+runtime_in_minutes | 90
+-[ RECORD 26 ]-----+-------------------------------------------------------------
+movie_id           | 1095
+title              | Alex Rider: Operation Stormbreaker
+rating             | PG
+in_theaters_date   | 2006-10-13
+on_streaming_date  | 2007-05-22
+runtime_in_minutes | 92
+-[ RECORD 27 ]-----+-------------------------------------------------------------
+movie_id           | 1334
+title              | Aliens vs. Predator: Requiem (AVP 2)
+rating             | R
+in_theaters_date   | 2007-12-25
+on_streaming_date  | 2008-04-15
+runtime_in_minutes | 93
+-[ RECORD 28 ]-----+-------------------------------------------------------------
+movie_id           | 1106
+title              | Alien Trespass
+rating             | PG
+in_theaters_date   | 2009-04-03
+on_streaming_date  | 2009-08-11
+runtime_in_minutes | 90
+-[ RECORD 29 ]-----+-------------------------------------------------------------
+movie_id           | 387
+title              | A Little Princess
+rating             | G
+in_theaters_date   | 1995-08-04
+on_streaming_date  | 1997-11-18
+runtime_in_minutes | 98
+-[ RECORD 30 ]-----+-------------------------------------------------------------
+movie_id           | 1125
+title              | All the President's Men
+rating             | PG
+in_theaters_date   | 1976-04-04
+on_streaming_date  | 1997-10-30
+runtime_in_minutes | 138
+-[ RECORD 31 ]-----+-------------------------------------------------------------
+movie_id           | 1126
+title              | All the Pretty Horses
+rating             | PG-13
+in_theaters_date   | 2000-12-25
+on_streaming_date  | 2001-05-08
+runtime_in_minutes | 116
+-[ RECORD 32 ]-----+-------------------------------------------------------------
+movie_id           | 1139
+title              | Along Came a Spider
+rating             | R
+in_theaters_date   | 2001-04-06
+on_streaming_date  | 2001-09-25
+runtime_in_minutes | 103
+-[ RECORD 33 ]-----+-------------------------------------------------------------
+movie_id           | 1140
+title              | Along Came Polly
+rating             | PG-13
+in_theaters_date   | 2004-01-16
+on_streaming_date  | 2004-06-08
+runtime_in_minutes | 90
+-[ RECORD 34 ]-----+-------------------------------------------------------------
+movie_id           | 1141
+title              | Alpha
+rating             | PG-13
+in_theaters_date   | 2018-08-17
+on_streaming_date  | 2018-11-13
+runtime_in_minutes | 97
+-[ RECORD 35 ]-----+-------------------------------------------------------------
+movie_id           | 1142
+title              | Alpha and Omega
+rating             | PG
+in_theaters_date   | 2010-09-17
+on_streaming_date  | 2011-01-11
+runtime_in_minutes | 88
+-[ RECORD 36 ]-----+-------------------------------------------------------------
+movie_id           | 1143
+title              | Alpha Dog
+rating             | R
+in_theaters_date   | 2007-01-12
+on_streaming_date  | 2007-05-01
+runtime_in_minutes | 118
+-[ RECORD 37 ]-----+-------------------------------------------------------------
+movie_id           | 1144
+title              | Alphaville
+rating             | NR
+in_theaters_date   | 1965-05-05
+on_streaming_date  | 1998-10-20
+runtime_in_minutes | 100
+-[ RECORD 38 ]-----+-------------------------------------------------------------
+movie_id           | 713
+title              | Alvin and the Chipmunks
+rating             | PG
+in_theaters_date   | 2007-12-14
+on_streaming_date  | 2008-04-01
+runtime_in_minutes | 91
+-[ RECORD 39 ]-----+-------------------------------------------------------------
+movie_id           | 1146
+title              | Alvin and the Chipmunks: Chipwrecked
+rating             | G
+in_theaters_date   | 2011-12-16
+on_streaming_date  | 2012-03-27
+runtime_in_minutes | 90
+-[ RECORD 40 ]-----+-------------------------------------------------------------
+movie_id           | 1147
+title              | Alvin and the Chipmunks: The Road Chip
+rating             | PG
+in_theaters_date   | 2015-12-18
+on_streaming_date  | 2016-03-15
+runtime_in_minutes | 86
+-[ RECORD 41 ]-----+-------------------------------------------------------------
+movie_id           | 107
+title              | Alvin and the Chipmunks: The Squeakquel
+rating             | PG
+in_theaters_date   | 2009-12-23
+on_streaming_date  | 2010-03-30
+runtime_in_minutes | 88
+-[ RECORD 42 ]-----+-------------------------------------------------------------
+movie_id           | 4274
+title              | A Man Apart
+rating             | R
+in_theaters_date   | 2003-04-04
+on_streaming_date  | 2003-09-02
+runtime_in_minutes | 109
+-[ RECORD 43 ]-----+-------------------------------------------------------------
+movie_id           | 1175
+title              | American Pastoral
+rating             | R
+in_theaters_date   | 2016-10-21
+on_streaming_date  | 2017-02-07
+runtime_in_minutes | 126
+-[ RECORD 44 ]-----+-------------------------------------------------------------
+movie_id           | 1176
+title              | American Pie
+rating             | R
+in_theaters_date   | 1999-07-09
+on_streaming_date  | 1999-12-21
+runtime_in_minutes | 96
+-[ RECORD 45 ]-----+-------------------------------------------------------------
+movie_id           | 1177
+title              | American Pie 2
+rating             | R
+in_theaters_date   | 2001-08-10
+on_streaming_date  | 2002-01-15
+runtime_in_minutes | 96
+-[ RECORD 46 ]-----+-------------------------------------------------------------
+movie_id           | 1179
+title              | American Psycho
+rating             | R
+in_theaters_date   | 2000-04-14
+on_streaming_date  | 2000-09-05
+runtime_in_minutes | 97
+-[ RECORD 47 ]-----+-------------------------------------------------------------
+movie_id           | 1182
+title              | American Sniper
+rating             | R
+in_theaters_date   | 2015-01-16
+on_streaming_date  | 2015-05-19
+runtime_in_minutes | 134
+-[ RECORD 48 ]-----+-------------------------------------------------------------
+movie_id           | 1183
+title              | American Splendor
+rating             | R
+in_theaters_date   | 2003-08-15
+on_streaming_date  | 2004-02-03
+runtime_in_minutes | 100
+-[ RECORD 49 ]-----+-------------------------------------------------------------
+movie_id           | 1194
+title              | Amores Perros
+rating             | R
+in_theaters_date   | 2001-03-30
+on_streaming_date  | 2001-09-25
+runtime_in_minutes | 153
+-[ RECORD 50 ]-----+-------------------------------------------------------------
+movie_id           | 1198
+title              | An Acceptable Loss
+rating             | R
+in_theaters_date   | 2019-01-18
+on_streaming_date  | 2019-07-02
+runtime_in_minutes | 102
+-[ RECORD 51 ]-----+-------------------------------------------------------------
+movie_id           | 1171
+title              | An American in Paris
+rating             | G
+in_theaters_date   | 1951-10-04
+on_streaming_date  | 1999-04-27
+runtime_in_minutes | 115
+-[ RECORD 52 ]-----+-------------------------------------------------------------
+movie_id           | 1181
+title              | An American Rhapsody
+rating             | PG-13
+in_theaters_date   | 2001-08-10
+on_streaming_date  | 2002-01-22
+runtime_in_minutes | 106
+-[ RECORD 53 ]-----+-------------------------------------------------------------
+movie_id           | 1207
+title              | Anamorph
+rating             | R
+in_theaters_date   | 2008-04-16
+on_streaming_date  | 2008-12-09
+runtime_in_minutes | 103
+-[ RECORD 54 ]-----+-------------------------------------------------------------
+movie_id           | 2623
+title              | An Everlasting Piece
+rating             | R
+in_theaters_date   | 2001-02-01
+on_streaming_date  | 2001-08-07
+runtime_in_minutes | 103
+-[ RECORD 55 ]-----+-------------------------------------------------------------
+movie_id           | 1216
+title              | Angus, Thongs and Perfect Snogging
+rating             | PG-13
+in_theaters_date   | 2008-07-25
+on_streaming_date  | 2009-12-22
+runtime_in_minutes | 100
+-[ RECORD 56 ]-----+-------------------------------------------------------------
+movie_id           | 1221
+title              | Anna and the Apocalypse
+rating             | R
+in_theaters_date   | 2018-11-30
+on_streaming_date  | 2019-02-12
+runtime_in_minutes | 92
+-[ RECORD 57 ]-----+-------------------------------------------------------------
+movie_id           | 1226
+title              | Annapolis
+rating             | PG-13
+in_theaters_date   | 2006-01-27
+on_streaming_date  | 2006-06-27
+runtime_in_minutes | 103
+-[ RECORD 58 ]-----+-------------------------------------------------------------
+movie_id           | 1235
+title              | Another Happy Day
+rating             | R
+in_theaters_date   | 2011-11-18
+on_streaming_date  | 2012-01-24
+runtime_in_minutes | 115
+-[ RECORD 59 ]-----+-------------------------------------------------------------
+movie_id           | 1239
+title              | Ant-Man and the Wasp
+rating             | PG-13
+in_theaters_date   | 2018-07-06
+on_streaming_date  | 2018-10-16
+runtime_in_minutes | 118
+-[ RECORD 60 ]-----+-------------------------------------------------------------
+movie_id           | 980
+title              | A Perfect Day
+rating             | R
+in_theaters_date   | 2016-01-15
+on_streaming_date  | 2016-05-17
+runtime_in_minutes | 106
+-[ RECORD 61 ]-----+-------------------------------------------------------------
+movie_id           | 981
+title              | A Perfect Getaway
+rating             | R
+in_theaters_date   | 2009-08-07
+on_streaming_date  | 2009-12-29
+runtime_in_minutes | 97
+-[ RECORD 62 ]-----+-------------------------------------------------------------
+movie_id           | 460
+title              | A Perfect Murder
+rating             | R
+in_theaters_date   | 1998-06-05
+on_streaming_date  | 1998-11-03
+runtime_in_minutes | 107
+-[ RECORD 63 ]-----+-------------------------------------------------------------
+movie_id           | 5021
+title              | A Perfect World
+rating             | PG-13
+in_theaters_date   | 1993-11-24
+on_streaming_date  | 2002-10-01
+runtime_in_minutes | 138
+-[ RECORD 64 ]-----+-------------------------------------------------------------
+movie_id           | 1250
+title              | Apocalypse Now
+rating             | R
+in_theaters_date   | 1979-01-01
+on_streaming_date  | 2001-11-20
+runtime_in_minutes | 153
+-[ RECORD 65 ]-----+-------------------------------------------------------------
+movie_id           | 1251
+title              | Apocalypse Now Redux
+rating             | R
+in_theaters_date   | 2001-08-17
+on_streaming_date  | 2001-11-20
+runtime_in_minutes | 195
+-[ RECORD 66 ]-----+-------------------------------------------------------------
+movie_id           | 1252
+title              | Apollo 13
+rating             | PG
+in_theaters_date   | 1995-06-30
+on_streaming_date  | 2004-09-07
+runtime_in_minutes | 140
+-[ RECORD 67 ]-----+-------------------------------------------------------------
+movie_id           | 1253
+title              | Apollo 18
+rating             | PG-13
+in_theaters_date   | 2011-09-02
+on_streaming_date  | 2011-12-27
+runtime_in_minutes | 88
+-[ RECORD 68 ]-----+-------------------------------------------------------------
+movie_id           | 1254
+title              | Apostle
+rating             | NR
+in_theaters_date   | 2018-10-12
+on_streaming_date  | 2018-10-12
+runtime_in_minutes | 129
+-[ RECORD 69 ]-----+-------------------------------------------------------------
+movie_id           | 64
+title              | Appaloosa
+rating             | R
+in_theaters_date   | 2008-10-03
+on_streaming_date  | 2009-01-13
+runtime_in_minutes | 115
+-[ RECORD 70 ]-----+-------------------------------------------------------------
+movie_id           | 1255
+title              | Appropriate Behavior
+rating             | NR
+in_theaters_date   | 2015-01-16
+on_streaming_date  | 2015-01-31
+runtime_in_minutes | 90
+-[ RECORD 71 ]-----+-------------------------------------------------------------
+movie_id           | 638
+title              | Appurushîdo (Appleseed)
+rating             | R
+in_theaters_date   | 2004-10-16
+on_streaming_date  | 2005-05-10
+runtime_in_minutes | 105
+-[ RECORD 72 ]-----+-------------------------------------------------------------
+movie_id           | 5135
+title              | A Prairie Home Companion
+rating             | PG-13
+in_theaters_date   | 2006-06-09
+on_streaming_date  | 2004-11-09
+runtime_in_minutes | 105
+-[ RECORD 73 ]-----+-------------------------------------------------------------
+movie_id           | 982
+title              | A Prayer Before Dawn
+rating             | R
+in_theaters_date   | 2018-08-10
+on_streaming_date  | 2018-10-09
+runtime_in_minutes | 116
+-[ RECORD 72 ]-----+-------------------------------------------------------------
+movie_id           | 5135
+title              | A Prairie Home Companion
+rating             | PG-13
+in_theaters_date   | 2006-06-09
+on_streaming_date  | 2004-11-09
+runtime_in_minutes | 105
+-[ RECORD 73 ]-----+-------------------------------------------------------------
+movie_id           | 982
+title              | A Prayer Before Dawn
+rating             | R
+in_theaters_date   | 2018-08-10
+on_streaming_date  | 2018-10-09
+runtime_in_minutes | 116
+-[ RECORD 74 ]-----+-------------------------------------------------------------
+movie_id           | 1256
+title              | Après vous (After You)
+rating             | R
+in_theaters_date   | 2003-12-17
+on_streaming_date  | 2005-11-08
+runtime_in_minutes | 109
+-[ RECORD 75 ]-----+-------------------------------------------------------------
+movie_id           | 1257
+title              | April and the Extraordinary World (Avril et le monde truqué)
+rating             | PG
+in_theaters_date   | 2016-03-25
+on_streaming_date  | 2016-08-02
+runtime_in_minutes | 105
+-[ RECORD 76 ]-----+-------------------------------------------------------------
+movie_id           | 983
+title              | A Private War
+rating             | R
+in_theaters_date   | 2018-11-16
+on_streaming_date  | 2019-02-05
+runtime_in_minutes | 106
+-[ RECORD 77 ]-----+-------------------------------------------------------------
+movie_id           | 823
+title              | A Prophet (Un prophete)
+rating             | R
+in_theaters_date   | 2010-02-26
+on_streaming_date  | 2010-08-03
+runtime_in_minutes | 155
+-[ RECORD 78 ]-----+-------------------------------------------------------------
+movie_id           | 1258
+title              | Apt Pupil
+rating             | R
+in_theaters_date   | 1998-10-23
+on_streaming_date  | 1999-04-13
+runtime_in_minutes | 111
+-[ RECORD 79 ]-----+-------------------------------------------------------------
+movie_id           | 984
+title              | A Quiet Passion
+rating             | PG-13
+in_theaters_date   | 2017-04-14
+on_streaming_date  | 2017-07-11
+runtime_in_minutes | 126
+-[ RECORD 80 ]-----+-------------------------------------------------------------
+movie_id           | 985
+title              | A Quiet Place
+rating             | PG-13
+in_theaters_date   | 2018-04-06
+on_streaming_date  | 2018-07-10
+runtime_in_minutes | 90
+-[ RECORD 81 ]-----+-------------------------------------------------------------
+movie_id           | 1261
+title              | Arachnophobia
+rating             | PG-13
+in_theaters_date   | 1990-07-18
+on_streaming_date  | 1999-06-15
+runtime_in_minutes | 109
+-[ RECORD 82 ]-----+-------------------------------------------------------------
+movie_id           | 1263
+title              | Archipelago
+rating             | NR
+in_theaters_date   | 2014-06-27
+on_streaming_date  | 2014-11-04
+runtime_in_minutes | 114
+-[ RECORD 83 ]-----+-------------------------------------------------------------
+movie_id           | 839
+title              | Art & Copy
+rating             | NR
+in_theaters_date   | 2009-03-27
+on_streaming_date  | 2010-05-04
+runtime_in_minutes | 86
+-[ RECORD 84 ]-----+-------------------------------------------------------------
+movie_id           | 989
+title              | A Separation
+rating             | PG-13
+in_theaters_date   | 2011-12-30
+on_streaming_date  | 2012-08-21
+runtime_in_minutes | 123
+-[ RECORD 85 ]-----+-------------------------------------------------------------
+movie_id           | 1288
+title              | Ash Is Purest White
+rating             | NR
+in_theaters_date   | 2019-03-15
+on_streaming_date  | 2019-07-16
+runtime_in_minutes | 136
+-[ RECORD 86 ]-----+-------------------------------------------------------------
+movie_id           | 991
+title              | A Simple Favor
+rating             | R
+in_theaters_date   | 2018-09-14
+on_streaming_date  | 2018-12-18
+runtime_in_minutes | 116
+-[ RECORD 87 ]-----+-------------------------------------------------------------
+movie_id           | 5693
+title              | A Simple Plan
+rating             | R
+in_theaters_date   | 1998-12-04
+on_streaming_date  | 1999-06-22
+runtime_in_minutes | 121
+-[ RECORD 88 ]-----+-------------------------------------------------------------
+movie_id           | 993
+title              | A Slipping-Down Life
+rating             | R
+in_theaters_date   | 1999-01-22
+on_streaming_date  | 2004-10-19
+runtime_in_minutes | 111
+-[ RECORD 89 ]-----+-------------------------------------------------------------
+movie_id           | 1297
+title              | Assault on Precinct 13
+rating             | R
+in_theaters_date   | 2005-01-19
+on_streaming_date  | 2005-05-10
+runtime_in_minutes | 108
+-[ RECORD 90 ]-----+-------------------------------------------------------------
+movie_id           | 161
+title              | Assault on Precinct 13
+rating             | R
+in_theaters_date   | 1976-11-05
+on_streaming_date  | 2003-03-11
+runtime_in_minutes | 91
+-[ RECORD 91 ]-----+-------------------------------------------------------------
+movie_id           | 6916
+title              | Átame! (Tie Me Up! Tie Me Down!)
+rating             | NC-17
+in_theaters_date   | 1990-01-22
+on_streaming_date  | 2000-12-12
+runtime_in_minutes | 105
+-[ RECORD 92 ]-----+-------------------------------------------------------------
+movie_id           | 1304
+title              | At Any Price
+rating             | R
+in_theaters_date   | 2013-04-24
+on_streaming_date  | 2013-08-27
+runtime_in_minutes | 105
+-[ RECORD 93 ]-----+-------------------------------------------------------------
+movie_id           | 1003
+title              | A Thousand Years of Good Prayers
+rating             | NR
+in_theaters_date   | 2008-09-19
+on_streaming_date  | 2009-05-26
+runtime_in_minutes | 83
+-[ RECORD 94 ]-----+-------------------------------------------------------------
+movie_id           | 1310
+title              | Atlantis - The Lost Empire
+rating             | PG
+in_theaters_date   | 2001-06-15
+on_streaming_date  | 2002-01-29
+runtime_in_minutes | 95
+-[ RECORD 95 ]-----+-------------------------------------------------------------
+movie_id           | 1311
+title              | Atlas Shrugged: Part I
+rating             | PG-13
+in_theaters_date   | 2011-04-15
+on_streaming_date  | 2011-11-08
+runtime_in_minutes | 102
+-[ RECORD 96 ]-----+-------------------------------------------------------------
+movie_id           | 1312
+title              | Atlas Shrugged: Part II
+rating             | PG-13
+in_theaters_date   | 2012-10-12
+on_streaming_date  | 2013-02-19
+runtime_in_minutes | 112
+-[ RECORD 97 ]-----+-------------------------------------------------------------
+movie_id           | 1005
+title              | A Town Called Panic (Panique au village)
+rating             | NR
+in_theaters_date   | 2009-12-16
+on_streaming_date  | 2010-07-20
+runtime_in_minutes | 76
+-[ RECORD 98 ]-----+-------------------------------------------------------------
+movie_id           | 1321
+title              | Austin Powers in Goldmember
+rating             | PG-13
+in_theaters_date   | 2002-07-25
+on_streaming_date  | 2002-12-03
+runtime_in_minutes | 94
+-[ RECORD 99 ]-----+-------------------------------------------------------------
+movie_id           | 1322
+title              | Austin Powers: International Man of Mystery
+rating             | PG-13
+in_theaters_date   | 1997-05-02
+on_streaming_date  | 1997-10-20
+runtime_in_minutes | 90
+-[ RECORD 100 ]----+-------------------------------------------------------------
+movie_id           | 1323
+title              | Austin Powers: The Spy Who Shagged Me
+rating             | PG-13
+in_theaters_date   | 1999-06-11
+on_streaming_date  | 1999-11-16
+runtime_in_minutes | 105
