@@ -605,7 +605,30 @@ def delete_movie(movie_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-
+@app.get("/user_liked/{user_id}")
+def get_liked_reviews_and_comments(user_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        query = """
+        SELECT review_id, comment_id FROM Likes
+        WHERE user_id = %s
+        """
+        cursor.execute(query, (user_id,))
+        likes = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        # Separate review IDs and comment IDs
+        review_ids = [like[0] for like in likes if like[0] is not None]
+        comment_ids = [like[1] for like in likes if like[1] is not None]
+        
+        return {"review_ids": review_ids, "comment_ids": comment_ids}
+    
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 from utils.review_info import get_review_info
 from utils.user_profile import review_ids_from_user
@@ -755,9 +778,6 @@ def create_comment(comment: CommentCreate):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
-
-
-
 
 @app.get("/movies_top_reviewed")
 def get_top_reviewed_movies():

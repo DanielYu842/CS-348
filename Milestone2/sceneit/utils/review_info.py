@@ -16,16 +16,16 @@ def get_review_info(review_id: int):
     cur.execute(query, (review_id,))
     review_info = cur.fetchone()
 
-    # # Optionally, fetch likes for this review
-    # likes_query = """
-    #     SELECT COUNT(*) as like_count
-    #     FROM likes
-    #     WHERE review_id = %s
-    # """
-    # cur.execute(likes_query, (review_id,))
-    # likes_count = cur.fetchone()['like_count']
+    # Optionally, fetch likes for this review
+    likes_query = """
+        SELECT COUNT(*) as like_count
+        FROM likes
+        WHERE review_id = %s
+    """
+    cur.execute(likes_query, (review_id,))
+    likes_count = cur.fetchone()['like_count']
 
-    # review_info['likes_count'] = likes_count  # Add likes count to the review info
+    review_info['likes_count'] = likes_count  # Add likes count to the review info
 
     cur.close()
     conn.close()
