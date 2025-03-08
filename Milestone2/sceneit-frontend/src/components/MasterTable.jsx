@@ -6,7 +6,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './MasterTable.css';
 import { API_ENDPOINT } from '../config'; 
 
-// Register all Community features
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const MasterTable = () => {
@@ -14,14 +14,14 @@ const MasterTable = () => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch data from the movies endpoint
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         const response = await fetch(`${API_ENDPOINT}/movies/search`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        // Assuming the API returns { count, results } structure
+
         setRowData(data.results || []);
       } catch (error) {
         console.error('Error fetching movies:', error);
@@ -32,9 +32,8 @@ const MasterTable = () => {
     };
 
     fetchMovies();
-  }, [API_ENDPOINT]); // Dependency on API_ENDPOINT to refetch if it changes
+  }, [API_ENDPOINT]); 
 
-  // Column definitions based on 6 non-array important values
   const [columnDefs] = useState([
     { field: 'title', headerName: 'Title', sortable: true, filter: true, flex: 2 },
     { field: 'rating', headerName: 'Rating', sortable: true, filter: true, width: 120 },
@@ -53,7 +52,7 @@ const MasterTable = () => {
   return (
     <div className="search-page">
       <header className="header">
-        <h1 className="logo">Sceneit</h1>
+        <h1 className="logo">SceneIt</h1>
       </header>
 
       <div className="search-container">
