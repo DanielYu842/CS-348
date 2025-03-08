@@ -743,3 +743,30 @@ def get_top_reviewed_movies():
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@app.get("/users/top_likes")
+def get_top_users_by_likes():
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                query = """
+                SELECT 
+                    u.username, 
+                    COUNT(*) AS total_likes
+                FROM Users u
+                inner join Likes l ON u.user_id = l.user_id
+                GROUP BY u.user_id
+                ORDER BY total_likes DESC
+                LIMIT 10;
+                """
+                cur.execute(query)
+                rows = cur.fetchall()
+
+                return {
+                    "count": len(rows),
+                    "results": rows
+                }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
