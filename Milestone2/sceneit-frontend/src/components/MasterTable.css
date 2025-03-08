@@ -1,4 +1,3 @@
-/* components/MasterTable.css */
 .search-page {
   background-color: #141414;
   color: white;
@@ -42,31 +41,27 @@
   background-color: #444;
 }
 
-/* Customize ag-theme-alpine to match your dark theme */
 .ag-theme-alpine {
   --ag-grid-size: 6px;
   --ag-header-background-color: #181818;
   --ag-odd-row-background-color: #1e1e1e;
-  --ag-even-row-background-color: #1e1e1e; /* Match odd rows for consistency */
-  --ag-background-color: #141414; /* Match the page background */
-  --ag-foreground-color: white; /* Set text color to white */
-  --ag-header-foreground-color: white; /* Header text color */
-  --ag-row-hover-color: #2a2a2a; /* Darker hover effect */
-  --ag-selected-row-background-color: #2a2a2a; /* Selected row style */
+  --ag-even-row-background-color: #1e1e1e;
+  --ag-background-color: #141414;
+  --ag-foreground-color: white; 
+  --ag-header-foreground-color: white;
+  --ag-row-hover-color: #2a2a2a;
+  --ag-selected-row-background-color: #2a2a2a;
 }
 
-/* Ensure no white background overrides */
 .ag-theme-alpine .ag-row {
-  background-color: transparent !important; /* Override any white background */
-  color: white !important; /* Ensure text is white */
+  background-color: transparent !important;
+  color: white !important;
 }
 
-/* Optional: Adjust header styling if needed */
 .ag-theme-alpine .ag-header {
   border-bottom: 1px solid #333;
 }
 
-/* Optional: Adjust pagination text */
 .ag-theme-alpine .ag-paging-panel {
   color: white;
 }

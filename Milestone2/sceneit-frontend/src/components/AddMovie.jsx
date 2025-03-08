@@ -34,7 +34,7 @@ const AddMovie = ({ onMovieAdded }) => {
       rating,
       in_theaters_date: inTheatersDate,
       on_streaming_date: onStreamingDate,
-      runtime_in_minutes: runtime ? parseInt(runtime) : 0, // Ensure it's a number
+      runtime_in_minutes: runtime ? parseInt(runtime) : 0,
       tomatometer_status: tomatometerStatus,
       tomatometer_rating: tomatometerRating ? parseFloat(tomatometerRating) : 0,
       tomatometer_count: tomatometerCount ? parseInt(tomatometerCount) : 0,
@@ -47,8 +47,6 @@ const AddMovie = ({ onMovieAdded }) => {
       directors: directors ? directors.split(',').map(d => d.trim()) : [],
     };
   
-    console.log("🚀 Sending movie data:", JSON.stringify(movieData, null, 2)); // ✅ Log formatted data
-  
     try {
       const response = await fetch('http://localhost:8000/movies/', {
         method: 'POST',
@@ -58,20 +56,17 @@ const AddMovie = ({ onMovieAdded }) => {
         },
         body: JSON.stringify(movieData),
       });
-  
-      console.log("📡 Response Status:", response.status); // ✅ Log response status
-  
+    
       const data = await response.json();
-      console.log("🔍 API Response:", data); // ✅ Log API response
   
       if (!response.ok) {
         throw new Error(data.message || 'Failed to add movie');
       }
   
-      alert('✅ Movie added successfully!');
+      alert('Movie added successfully!');
       onMovieAdded();
     } catch (error) {
-      console.error("❌ Error adding movie:", error); // ✅ Log errors
+      console.error("Error adding movie:", error); 
       setError(error.message);
     } finally {
       setLoading(false);

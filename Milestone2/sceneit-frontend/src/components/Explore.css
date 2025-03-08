@@ -34,15 +34,14 @@
 
 .movie-row {
   display: flex;
-  flex-wrap: nowrap; /* Prevent wrapping to ensure horizontal scrolling */
-  overflow-x: auto; /* Enable horizontal scrolling */
+  flex-wrap: nowrap;
+  overflow-x: auto;
   padding: 20px 0;
-  gap: 10px; /* Space between cards */
-  scrollbar-width: thin; /* Firefox scrollbar styling */
-  scrollbar-color: #e50914 #141414; /* Scrollbar color */
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #e50914 #141414;
 }
 
-/* Webkit (Chrome, Safari) scrollbar styling */
 .movie-row::-webkit-scrollbar {
   height: 8px;
 }
@@ -56,12 +55,10 @@
   background: #141414;
 }
 
-/* Ensure cards don't shrink */
 .movie-row > * {
-  flex-shrink: 0; /* Prevent cards from shrinking */
+  flex-shrink: 0;
 }
 
-/* Remove modal-related styles if not used */
 .modal-overlay {
   position: fixed;
   top: 0;
