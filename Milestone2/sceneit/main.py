@@ -605,7 +605,7 @@ def delete_movie(movie_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-@app.get("/user_profile/user_liked/{user_id}")
+@app.get("/user_profile/{user_id}/user_liked")
 def get_liked_reviews_and_comments(user_id: int):
     try:
         conn = get_db_connection()
@@ -633,7 +633,7 @@ def get_liked_reviews_and_comments(user_id: int):
 from utils.review_info import get_review_info
 from utils.user_profile import review_ids_from_user
 
-@app.get("/user_profile/user_reviews/{user_id}")
+@app.get("/user_profile/{user_id}/user_reviews")
 def get_reviews_from_user(user_id: int):
     try:
         # Fetch review IDs for the given user
