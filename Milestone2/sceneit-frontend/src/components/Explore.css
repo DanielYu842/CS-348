@@ -27,7 +27,7 @@
 
 .movie-row {
   display: flex;
-  overflow-x: auto;
+  /* overflow-x: auto; */
   padding: 20px 0;
   gap: 10px;
   scrollbar-width: thin;
@@ -43,30 +43,7 @@
   border-radius: 4px;
 }
 
-.movie-card {
-  flex: 0 0 auto;
-  width: 200px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.movie-card:hover {
-  transform: scale(1.05);
-}
-
-.movie-card img {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.movie-title {
-  font-size: 0.9rem;
-  margin: 5px 0;
-  text-align: center;
-}
-
+/* Remove movie-card styles since they are now in MovieCard.css */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -139,4 +116,12 @@
 
 .play-button:hover {
   background-color: #f40612;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h2 {
+  margin-bottom: 10px;
 }

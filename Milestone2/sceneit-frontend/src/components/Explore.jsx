@@ -1,101 +1,61 @@
 // components/Explore.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Explore.css';
-
-const movieData = [
-  {
-    id: 1,
-    title: "The Shawshank Redemption",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "Two imprisoned men bond over a number of years...",
-    rating: "9.3/10",
-    genre: "Drama"
-  },
-
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    image: "https://images.squarespace-cdn.com/content/v1/63bb3e8a824d7e2f7eedf0d3/6dabf093-d7ea-4c67-ae7d-a88b5230cbf7/Scoop+3.jpeg",
-    description: "The aging patriarch of an organized crime dynasty...",
-    rating: "9.2/10",
-    genre: "Crime"
-  },
-];
+import { API_ENDPOINT } from '../config';
+import MovieCard from './MovieCard'; 
 
 const Explore = () => {
-  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [topReviewedMovies, setTopReviewedMovies] = useState([]);
+  const [worstMovies, setWorstMovies] = useState([]);
+  const [bestMovies, setBestMovies] = useState([]);
+  const [topLikedUsers, setTopLikedUsers] = useState([]);
+  const [loading, setLoading] = useState({
+    topReviewed: true,
+    worst: true,
+    best: true,
+    users: true
+  });
 
-  const handleMovieClick = (movie) => {
-    setSelectedMovie(movie);
-  };
+  // Fetch data for all sections
+  useEffect(() => {
+    const fetchData = async (endpoint, setter, loadingKey) => {
+      try {
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        setter(data?.["results"] || data);
+      } catch (error) {
+        console.error(`Error fetching ${loadingKey}:`, error);
+        setter([]);
+      } finally {
+        setLoading(prev => ({ ...prev, [loadingKey]: false }));
+      }
+    };
 
-  const closeModal = () => {
-    setSelectedMovie(null);
-  };
+    fetchData(`${API_ENDPOINT}/movies_top_reviewed`, setTopReviewedMovies, 'topReviewed');
+    fetchData(`${API_ENDPOINT}/movies_top?best=false`, setWorstMovies, 'worst');
+    fetchData(`${API_ENDPOINT}/movies_top?best=true`, setBestMovies, 'best');
+    fetchData(`${API_ENDPOINT}/users/top_likes`, setTopLikedUsers, 'users');
+  }, []);
+
+  const renderRow = (title, items, loadingKey, isUsers = false) => (
+    <div className="section">
+      <h2>{title}</h2>
+      {loading[loadingKey] ? (
+        <p>Loading {title.toLowerCase()}...</p>
+      ) : (
+        <div className="movie-row">
+          {items?.map((item) => (
+            <MovieCard 
+              key={item.id || item.movie_id || item.user_id} 
+              movie={!isUsers ? item : null}
+              // user={isUsers ? item : null}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="explore">
@@ -104,36 +64,11 @@ const Explore = () => {
       </header>
 
       <div className="content">
-        <h2>Popular Movies</h2>
-        <div className="movie-row">
-          {movieData.map((movie) => (
-            <div 
-              key={movie.id} 
-              className="movie-card"
-              onClick={() => handleMovieClick(movie)}
-            >
-              <img src={movie.image} alt={movie.title} />
-              <div className="movie-title">{movie.title}</div>
-            </div>
-          ))}
-        </div>
+        {renderRow('Top Reviewed Movies', topReviewedMovies, 'topReviewed')}
+        {renderRow('Worst Rated Movies', worstMovies, 'worst')}
+        {renderRow('Best Rated Movies', bestMovies, 'best')}
+        {renderRow('Top Liked Users', topLikedUsers, 'users', true)}
       </div>
-
-      {selectedMovie && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="close-button" onClick={closeModal}>×</button>
-            <img src={selectedMovie.image} alt={selectedMovie.title} className="modal-image" />
-            <div className="modal-info">
-              <h2>{selectedMovie.title}</h2>
-              <p className="rating">{selectedMovie.rating}</p>
-              <p className="genre">{selectedMovie.genre}</p>
-              <p className="description">{selectedMovie.description}</p>
-              <button className="play-button">Play</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
