@@ -1,11 +1,14 @@
 import './App.css';
 import { API_ENDPOINT } from "./config";
 import { useEffect, useState } from 'react';
+import Explore from './components/Explore';
+import Search from './components/Search';
 
 function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeScreen, setActiveScreen] = useState('explore');
 
   useEffect(() => {
     console.log('Fetching from:', API_ENDPOINT);
@@ -33,25 +36,24 @@ function App() {
 
   return (
     <div className="App">
-      <h1>CS348 Project</h1>
-      
-      <div>
-        <h2>API Endpoint:</h2>
-        <p>{API_ENDPOINT}</p>
-      </div>
+      <nav className="navigation">
+        <button 
+          onClick={() => setActiveScreen('explore')}
+          className={activeScreen === 'explore' ? 'active' : ''}
+        >
+          Explore
+        </button>
+        <button 
+          onClick={() => setActiveScreen('search')}
+          className={activeScreen === 'search' ? 'active' : ''}
+        >
+          Search
+        </button>
+      </nav>
 
-      <div>
-        <h2>Status:</h2>
-        {loading && <p>Loading...</p>}
-        {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-      </div>
-
-      <div>
-        <h2>Response Data:</h2>
-        {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-        {!loading && !error && !data && <p>No data received</p>}
-      </div>
-    </div>
+      {activeScreen === 'explore' && <Explore />}
+      {activeScreen === 'search' && <Search />}
+    </div> 
   );
 }
 
