@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from typing import Optional, List
 from queries.create_tables import CREATE_TABLES_SQL
@@ -10,6 +11,16 @@ from pydantic import BaseModel
 from datetime import date
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 update_tables = True
 
 def setup_database():

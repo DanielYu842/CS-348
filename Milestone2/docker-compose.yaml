@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   database:
     image: postgres:14
@@ -23,13 +25,30 @@ services:
       database:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     networks:
       - services-net
     volumes:
       - ./sceneit:/app
+    environment:
+      - BACKEND_PORT=${BACKEND_PORT}
     command:
-      uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app
+      uvicorn main:app --host 0.0.0.0 --port ${BACKEND_PORT} --reload --reload-dir /app
+
+  sceneit-frontend:
+    build: 
+      context: ./sceneit-frontend
+      args:
+        REACT_APP_API_URL: "${BACKEND_URL}"
+    depends_on:
+      - sceneit
+    ports:
+      - "3000:80"
+    networks:
+      - services-net
+    environment:
+      - REACT_APP_API_URL=${BACKEND_URL}
+    command: [ "nginx", "-g", "daemon off;" ]
 
 networks:
   services-net:
