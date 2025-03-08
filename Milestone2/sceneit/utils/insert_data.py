@@ -76,7 +76,7 @@ def insert_reviews(csv_filepath: str):
         if Review.review_attrs_soft_check(review_attrs):
             review = Review(review_attrs)
             cur.execute(INSERT_REVIEW_SQL, (
-                review.review_id, review.movie_id, review.user_id,
+                review.movie_id, review.user_id,
                 review.title, review.content, review.rating))
     conn.commit()
     cur.close()
@@ -100,7 +100,7 @@ def insert_users(csv_filepath: str):
         if User.user_attrs_soft_check(user_attrs):
             user = User(user_attrs)
             cur.execute(INSERT_USER_SQL, (
-                user.user_id, user.username, user.email, user.password_hash
+                user.username, user.email, user.password_hash
                 ))
     conn.commit()
     cur.close()

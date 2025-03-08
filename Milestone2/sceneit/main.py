@@ -9,6 +9,13 @@ from utils.db import get_db_connection
 import psycopg2.extras
 from pydantic import BaseModel
 from datetime import date
+from fastapi import FastAPI, HTTPException
+import psycopg2
+import psycopg2.extras
+from pydantic import BaseModel, EmailStr
+from passlib.context import CryptContext
+from utils.db import get_db_connection
+from datetime import datetime
 
 app = FastAPI()
 
@@ -431,10 +438,6 @@ def delete_movie(movie_id: int):
 
 
 
-
-
-
-
 from utils.review_info import get_review_info
 from utils.user_profile import review_ids_from_user
 
@@ -456,7 +459,230 @@ def get_reviews_from_user(user_id: int):
             reviews_data.append(review_info)
 
         return {"count": len(reviews_data), "results": reviews_data}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+@app.get("/movies_top")
+def get_movies_by_rating(best: bool = True):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                query = f"""
+                SELECT 
+                    m.*,
+                    ARRAY_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL) as genres,
+                    ARRAY_AGG(DISTINCT w.name) FILTER (WHERE w.name IS NOT NULL) as writers,
+                    ARRAY_AGG(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL) as actors,
+                    ARRAY_AGG(DISTINCT s.name) FILTER (WHERE s.name IS NOT NULL) as studios,
+                    ARRAY_AGG(DISTINCT d.name) FILTER (WHERE d.name IS NOT NULL) as directors
+                FROM Movie m
+                LEFT JOIN MovieGenre mg ON m.movie_id = mg.movie_id
+                LEFT JOIN Genre g ON mg.genre_id = g.genre_id
+                LEFT JOIN MovieWriter mw ON m.movie_id = mw.movie_id
+                LEFT JOIN Writer w ON mw.writer_id = w.writer_id
+                LEFT JOIN MovieActor ma ON m.movie_id = ma.movie_id
+                LEFT JOIN Actor a ON ma.actor_id = a.actor_id
+                LEFT JOIN MovieStudio ms ON m.movie_id = ms.movie_id
+                LEFT JOIN Studio s ON ms.studio_id = s.studio_id
+                LEFT JOIN MovieDirector md ON m.movie_id = md.movie_id
+                LEFT JOIN Director d ON md.director_id = d.director_id
+                WHERE m.audience_rating IS NOT NULL
+                GROUP BY m.movie_id
+                ORDER BY m.audience_rating {"DESC" if best else "ASC"}
+                LIMIT 10
+                """
+
+                cur.execute(query)
+                rows = cur.fetchall()
+
+                return {
+                    "count": len(rows),
+                    "results": rows
+                }
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+    
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+@app.post("/users/signup")
+def create_user(user: UserCreate):
+    try:
+        hashed_password = pwd_context.hash(user.password)
+
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("""
+                    INSERT INTO Users (username, email, password_hash, created_at, updated_at) 
+                    VALUES (%s, %s, %s, NOW(), NOW()) 
+                    RETURNING user_id, username, email, created_at
+                """, (user.username, user.email, hashed_password))
+
+                new_user = cur.fetchone()
+                return new_user
+
+    except psycopg2.errors.UniqueViolation:
+        raise HTTPException(status_code=400, detail="Username or email already exists")
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@app.post("/users/login")
+def login_user(user: UserLogin):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT user_id, username, email, password_hash FROM Users WHERE email = %s", (user.email,))
+                db_user = cur.fetchone()
+
+                if not db_user or not pwd_context.verify(user.password, db_user["password_hash"]):
+                    return {"success": False, "message": "Invalid credentials"}
+
+                return {"success": True, "user": {"user_id": db_user["user_id"], "username": db_user["username"], "email": db_user["email"]}}
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+
+class ReviewCreate(BaseModel):
+    movie_id: int
+    user_id: int
+    title: str
+    content: str
+    rating: float  # Rating should be between 0 and 100
+
+@app.post("/reviews/")
+def create_review(review: ReviewCreate):
+    if not (0 <= review.rating <= 100):
+        raise HTTPException(status_code=400, detail="Rating must be between 0 and 100")
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Check if movie exists
+                cur.execute("SELECT movie_id FROM Movie WHERE movie_id = %s", (review.movie_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Movie not found")
+
+                # Check if user exists
+                cur.execute("SELECT user_id FROM Users WHERE user_id = %s", (review.user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                # Insert the review
+                cur.execute("""
+                    INSERT INTO Reviews (movie_id, user_id, title, content, rating, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
+                    RETURNING review_id, movie_id, user_id, title, content, rating, created_at, updated_at
+                """, (review.movie_id, review.user_id, review.title, review.content, review.rating))
+
+                new_review = cur.fetchone()
+                return new_review
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+class CommentCreate(BaseModel):
+    review_id: int
+    user_id: int
+    content: str
+
+@app.post("/comments/")
+def create_comment(comment: CommentCreate):
+    if not comment.content.strip():
+        raise HTTPException(status_code=400, detail="Comment content cannot be empty")
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT review_id FROM Reviews WHERE review_id = %s", (comment.review_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Review not found")
+
+                cur.execute("SELECT user_id FROM Users WHERE user_id = %s", (comment.user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                cur.execute("""
+                    INSERT INTO Comments (review_id, user_id, content, created_at, updated_at)
+                    VALUES (%s, %s, %s, NOW(), NOW())
+                    RETURNING comment_id, review_id, user_id, content, created_at, updated_at
+                """, (comment.review_id, comment.user_id, comment.content))
+
+                new_comment = cur.fetchone()
+                return new_comment
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+
+class LikeCreate(BaseModel):
+    user_id: int
+    review_id: Optional[int] = None
+    comment_id: Optional[int] = None
+
+@app.post("/likes/")
+def like_item(like: LikeCreate):
+    if not like.review_id and not like.comment_id:
+        raise HTTPException(status_code=400, detail="Must provide either review_id or comment_id")
+    if like.review_id and like.comment_id:
+        raise HTTPException(status_code=400, detail="Cannot like both a review and a comment at the same time")
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Check if user exists
+                cur.execute("SELECT user_id FROM Users WHERE user_id = %s", (like.user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                if like.review_id:
+                    # Check if review exists
+                    cur.execute("SELECT review_id FROM Reviews WHERE review_id = %s", (like.review_id,))
+                    if cur.fetchone() is None:
+                        raise HTTPException(status_code=404, detail="Review not found")
+
+                    # Check if user already liked this review
+                    cur.execute("SELECT like_id FROM Likes WHERE user_id = %s AND review_id = %s", (like.user_id, like.review_id))
+                    if cur.fetchone():
+                        raise HTTPException(status_code=400, detail="User has already liked this review")
+
+                    # Insert like for review
+                    cur.execute("""
+                        INSERT INTO Likes (user_id, review_id, created_at) 
+                        VALUES (%s, %s, NOW()) 
+                        RETURNING like_id, user_id, review_id, created_at
+                    """, (like.user_id, like.review_id))
+
+                elif like.comment_id:
+                    # Check if comment exists
+                    cur.execute("SELECT comment_id FROM Comments WHERE comment_id = %s", (like.comment_id,))
+                    if cur.fetchone() is None:
+                        raise HTTPException(status_code=404, detail="Comment not found")
+
+                    # Check if user already liked this comment
+                    cur.execute("SELECT like_id FROM Likes WHERE user_id = %s AND comment_id = %s", (like.user_id, like.comment_id))
+                    if cur.fetchone():
+                        raise HTTPException(status_code=400, detail="User has already liked this comment")
+
+                    # Insert like for comment
+                    cur.execute("""
+                        INSERT INTO Likes (user_id, comment_id, created_at) 
+                        VALUES (%s, %s, NOW()) 
+                        RETURNING like_id, user_id, comment_id, created_at
+                    """, (like.user_id, like.comment_id))
+
+                new_like = cur.fetchone()
+                return new_like
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
