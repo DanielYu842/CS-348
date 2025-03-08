@@ -1,0 +1,74 @@
+.add-movie-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #141414;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+  
+.add-movie-container {
+    background-color: #1e1e1e;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 350px;
+}
+  
+.logo {
+    color: #e50914;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+  
+.add-movie-form {
+    display: flex;
+    flex-direction: column;
+}
+  
+.movie-input {
+    width: 100%;
+    max-width: 325px;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+}
+  
+.movie-input:focus {
+    outline: none;
+    background-color: #444;
+}
+  
+.movie-button {
+    background-color: #e50914;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+  
+.movie-button:hover {
+    background-color: #b20710;
+}
+  
+.error-message {
+    color: #ff4c4c;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.scrollable-form {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 4px;
+  }

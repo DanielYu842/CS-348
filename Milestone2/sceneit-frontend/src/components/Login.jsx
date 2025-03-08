@@ -22,14 +22,13 @@ const Login = ({ onLogin, onSignup }) => {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(data.message || 'Login failed');
       }
 
-      if (data.user_id) {
         localStorage.setItem('authUser', JSON.stringify(data));
         setIsAuthenticated(true);
-      }
+
 
       onLogin();
 
