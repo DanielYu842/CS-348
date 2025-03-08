@@ -1,4 +1,3 @@
-/* components/Explore.css */
 .explore {
   background-color: #141414;
   color: white;
@@ -25,15 +24,25 @@
   padding: 80px 20px 20px;
 }
 
-.movie-row {
-  display: flex;
-  /* overflow-x: auto; */
-  padding: 20px 0;
-  gap: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: #e50914 #141414;
+.section {
+  margin-bottom: 40px;
 }
 
+.section h2 {
+  margin-bottom: 10px;
+}
+
+.movie-row {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping to ensure horizontal scrolling */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding: 20px 0;
+  gap: 10px; /* Space between cards */
+  scrollbar-width: thin; /* Firefox scrollbar styling */
+  scrollbar-color: #e50914 #141414; /* Scrollbar color */
+}
+
+/* Webkit (Chrome, Safari) scrollbar styling */
 .movie-row::-webkit-scrollbar {
   height: 8px;
 }
@@ -43,7 +52,16 @@
   border-radius: 4px;
 }
 
-/* Remove movie-card styles since they are now in MovieCard.css */
+.movie-row::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+/* Ensure cards don't shrink */
+.movie-row > * {
+  flex-shrink: 0; /* Prevent cards from shrinking */
+}
+
+/* Remove modal-related styles if not used */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -116,12 +134,4 @@
 
 .play-button:hover {
   background-color: #f40612;
-}
-
-.section {
-  margin-bottom: 40px;
-}
-
-.section h2 {
-  margin-bottom: 10px;
 }

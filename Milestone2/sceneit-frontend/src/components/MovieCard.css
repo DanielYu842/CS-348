@@ -5,6 +5,10 @@
   cursor: pointer;
   transition: transform 0.2s;
   text-align: center;
+  width: 200px; /* Fixed width */
+  height: 340px; /* Fixed height: 300px for image + 40px for title */
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .movie-card:hover {
@@ -13,24 +17,26 @@
 
 .movie-card img {
   width: 100%;
-  height: 300px;
+  height: 300px; /* Fixed height for image */
   object-fit: cover;
   border-radius: 4px 4px 0 0;
 }
 
 .movie-no-image {
   width: 100%;
-  height: 300px;
+  height: 300px; /* Fixed height matching image */
   background-color: black;
   border-radius: 4px 4px 0 0;
 }
 
 .movie-title {
   font-size: 0.9rem;
-  margin: 5px 0;
-  padding: 0 10px;
+  padding: 5px 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: white;
+  height: 40px; /* Fixed height for title area */
+  line-height: 30px; /* Center text vertically within the fixed height */
+  background-color: #1e1e1e;
 }
