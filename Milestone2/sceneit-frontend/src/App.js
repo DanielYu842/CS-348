@@ -46,6 +46,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('authUser');
+    setActiveScreen('explore');
     setIsAuthenticated(false);
   };
 
