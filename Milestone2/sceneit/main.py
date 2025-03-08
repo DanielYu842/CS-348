@@ -37,6 +37,48 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
+
+@app.post("/seed")
+def setup_database():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    
+    if update_tables:
+        print("Dropping all tables")
+        cur.execute("Drop table if exists Movie cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
+    cur.execute(CREATE_TABLES_SQL)
+    conn.commit()
+    insert_movies(MOVIES_CSV_PATH)
+    # insert_users(USERS_CSV_PATH)
+
+    for i in range(ord('a'), ord('z')+1):
+        uname = chr(i) + "@cmail.com"
+        pw = uname
+        user = UserCreate(username = chr(i), email=uname,password= pw)
+        create_user(user)
+
+    insert_reviews(REVIEWS_CSV_PATH)
+    create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
+
+    repeats = []
+    for _ in range(100):
+        id = random.randint(1, 10)
+        rid = random.randint(1, 20)
+        data =LikeCreate(
+            user_id=id,  # user_id from 1 to 10
+            review_id=rid,  # review_id from 1 to 10
+            comment_id=None  # comment_id is set to None
+        )
+        if (id,rid) in repeats: continue
+        repeats.append((id,rid))
+        like_item(data)
+
+
+    cur.close()
+    conn.close()
+
+    return {"message": "Database setup successful"}
 class LikeCreate(BaseModel):
     user_id: int
     review_id: Optional[int] = None
@@ -138,41 +180,6 @@ def create_review(review: ReviewCreate):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-@app.post("/seed")
-def setup_database():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    
-    if update_tables:
-        print("Dropping all tables")
-        cur.execute("Drop table if exists Movie cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
-    cur.execute(CREATE_TABLES_SQL)
-    conn.commit()
-    insert_movies(MOVIES_CSV_PATH)
-    insert_users(USERS_CSV_PATH)
-    insert_reviews(REVIEWS_CSV_PATH)
-    create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
-
-    repeats = []
-    for _ in range(50):
-        id = random.randint(1, 10)
-        rid = random.randint(1, 10)
-        data =LikeCreate(
-            user_id=id,  # user_id from 1 to 10
-            review_id=rid,  # review_id from 1 to 10
-            comment_id=None  # comment_id is set to None
-        )
-        if (id,rid) in repeats: continue
-        repeats.append((id,rid))
-        like_item(data)
-
-
-    cur.close()
-    conn.close()
-
-    return {"message": "Database setup successful"}
 
 # Request/Response Models
 class MovieCreate(BaseModel):

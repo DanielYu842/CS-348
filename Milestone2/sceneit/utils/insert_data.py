@@ -8,7 +8,7 @@ from objects.review import Review
 from objects.movie import Movie
 from psycopg2.extensions import cursor
 
-SAMPLE_SIZE = 50
+SAMPLE_SIZE = 250
 
 def insert_into_entity_table(cur: cursor, table_name, entity_name):
     cur.execute(f"""
