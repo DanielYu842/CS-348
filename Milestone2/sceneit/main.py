@@ -593,3 +593,66 @@ def create_comment(comment: CommentCreate):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+
+class LikeCreate(BaseModel):
+    user_id: int
+    review_id: Optional[int] = None
+    comment_id: Optional[int] = None
+
+@app.post("/likes/")
+def like_item(like: LikeCreate):
+    if not like.review_id and not like.comment_id:
+        raise HTTPException(status_code=400, detail="Must provide either review_id or comment_id")
+    if like.review_id and like.comment_id:
+        raise HTTPException(status_code=400, detail="Cannot like both a review and a comment at the same time")
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Check if user exists
+                cur.execute("SELECT user_id FROM Users WHERE user_id = %s", (like.user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                if like.review_id:
+                    # Check if review exists
+                    cur.execute("SELECT review_id FROM Reviews WHERE review_id = %s", (like.review_id,))
+                    if cur.fetchone() is None:
+                        raise HTTPException(status_code=404, detail="Review not found")
+
+                    # Check if user already liked this review
+                    cur.execute("SELECT like_id FROM Likes WHERE user_id = %s AND review_id = %s", (like.user_id, like.review_id))
+                    if cur.fetchone():
+                        raise HTTPException(status_code=400, detail="User has already liked this review")
+
+                    # Insert like for review
+                    cur.execute("""
+                        INSERT INTO Likes (user_id, review_id, created_at) 
+                        VALUES (%s, %s, NOW()) 
+                        RETURNING like_id, user_id, review_id, created_at
+                    """, (like.user_id, like.review_id))
+
+                elif like.comment_id:
+                    # Check if comment exists
+                    cur.execute("SELECT comment_id FROM Comments WHERE comment_id = %s", (like.comment_id,))
+                    if cur.fetchone() is None:
+                        raise HTTPException(status_code=404, detail="Comment not found")
+
+                    # Check if user already liked this comment
+                    cur.execute("SELECT like_id FROM Likes WHERE user_id = %s AND comment_id = %s", (like.user_id, like.comment_id))
+                    if cur.fetchone():
+                        raise HTTPException(status_code=400, detail="User has already liked this comment")
+
+                    # Insert like for comment
+                    cur.execute("""
+                        INSERT INTO Likes (user_id, comment_id, created_at) 
+                        VALUES (%s, %s, NOW()) 
+                        RETURNING like_id, user_id, comment_id, created_at
+                    """, (like.user_id, like.comment_id))
+
+                new_like = cur.fetchone()
+                return new_like
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
