@@ -47,6 +47,14 @@ const Signup = ({ onSignup }) => {
         <h1 className="logo">SceneIt</h1>
         <form className="signup-form" onSubmit={handleSubmit}>
           <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="signup-input"
+            required
+          />
+          <input
             type="email"
             placeholder="Email"
             value={email}
@@ -82,4 +90,3 @@ const Signup = ({ onSignup }) => {
 };
 
 export default Signup;
-

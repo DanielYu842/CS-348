@@ -8,8 +8,9 @@ import Search from './components/Search';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import SingleMoviePage from './components/SingleMoviePage';
+import AddMovie from './components/AddMovie';
+import UpdateMovie from './components/UpdateMovie';
 
-// Main App component
 function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -45,10 +46,10 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('authUser');
+    setActiveScreen('explore');
     setIsAuthenticated(false);
   };
 
-  // Main content component for the root route
   const MainContent = () => {
     return (
       <div className="App">
@@ -77,6 +78,26 @@ function App() {
               Search
             </button>
           </Link>
+          {isAuthenticated && (
+            <Link to="/">
+              <button 
+                onClick={() => setActiveScreen('addmovie')}
+                className={activeScreen === 'addmovie' ? 'active' : ''}
+              >
+                Add Movie
+              </button>
+            </Link>
+          )}
+          {isAuthenticated && (
+            <Link to="/">
+              <button 
+                onClick={() => setActiveScreen('updatemovie')}
+                className={activeScreen === 'updatemovie' ? 'active' : ''}
+              >
+                Update Movie
+              </button>
+            </Link>
+          )}
           {!isAuthenticated && (
             <Link to="/">
               <button 
@@ -102,7 +123,8 @@ function App() {
 
         {activeScreen === 'explore' && <Explore />}
         {activeScreen === 'masterTable' && <MasterTable />}
-        {activeScreen === 'Search' && <Search />}
+        {activeScreen === 'addmovie' && <AddMovie />}
+        {activeScreen === 'updatemovie' && <UpdateMovie />}
         {activeScreen === 'search' && <Search />}
         {activeScreen === 'login' && <Login onLogin={handleLogin} onSignup={() => setActiveScreen('signup')} />}
         {activeScreen === 'signup' && <Signup onSignup={() => setActiveScreen('login')} />}
