@@ -9,6 +9,12 @@ from utils.db import get_db_connection
 import psycopg2.extras
 from pydantic import BaseModel
 from datetime import date
+from fastapi import FastAPI, HTTPException
+import psycopg2
+import psycopg2.extras
+from pydantic import BaseModel, EmailStr
+from passlib.context import CryptContext
+from utils.db import get_db_connection
 
 app = FastAPI()
 
@@ -462,6 +468,55 @@ def get_movies_by_rating(best: bool = True):
                     "count": len(rows),
                     "results": rows
                 }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+@app.post("/users/signup")
+def create_user(user: UserCreate):
+    try:
+        hashed_password = pwd_context.hash(user.password)
+
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("""
+                    INSERT INTO Users (username, email, password_hash, created_at, updated_at) 
+                    VALUES (%s, %s, %s, NOW(), NOW()) 
+                    RETURNING user_id, username, email, created_at
+                """, (user.username, user.email, hashed_password))
+
+                new_user = cur.fetchone()
+                return new_user
+
+    except psycopg2.errors.UniqueViolation:
+        raise HTTPException(status_code=400, detail="Username or email already exists")
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@app.post("/users/login")
+def login_user(user: UserLogin):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT user_id, username, email, password_hash FROM Users WHERE email = %s", (user.email,))
+                db_user = cur.fetchone()
+
+                if not db_user or not pwd_context.verify(user.password, db_user["password_hash"]):
+                    return {"success": False, "message": "Invalid credentials"}
+
+                return {"success": True, "user": {"user_id": db_user["user_id"], "username": db_user["username"], "email": db_user["email"]}}
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
