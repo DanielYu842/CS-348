@@ -10,6 +10,9 @@
           `cd Milestone1`
       •	Start the application:
           `make start`
+  
+  3. Run the frontend:
+    •	<TODO>
       
   And the fastapi server along with postgres should be running! You should also be able to see the initially seeded data that we've
   take from Maven Analytics.
@@ -19,7 +22,9 @@
 
   ## Seeding Data
 
-  Ensure `PRODUCTION=TRUE` in `/static/vars.py` to load the entire dataset.
+  Run the following to seed the data with the local dataset: `curl -X POST "http://localhost:8000/seed?setup_type=local"`
+
+  Run the following to seed the data with the production dataset (might take a few minutes): `curl -X POST "http://localhost:8000/seed?setup_type=prod"`
 
   ## Connecting To Our Application
 
