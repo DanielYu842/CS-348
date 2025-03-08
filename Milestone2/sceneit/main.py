@@ -86,6 +86,9 @@ def get_table_data(table_name: str):
 
 @app.get("/reviews/search")
 def search_comments_by_movie_id(movie_id: int):
+    # Note to self:
+    # should return review_id's instead, then have a function that takes a review_id and gets all the information about the review
+    # Eg - review likes, replies to the review, rating, etc
     query = f"SELECT * FROM Reviews join (Select user_id, username, email from Users) Users on Reviews.user_id = Users.user_id where movie_id = {movie_id}"
     try:
         with get_db_connection() as conn:
@@ -424,3 +427,36 @@ def delete_movie(movie_id: int):
 
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+
+
+
+
+
+
+from utils.review_info import get_review_info
+from utils.user_profile import review_ids_from_user
+
+@app.get("/user_profile/{user_id}")
+def get_reviews_from_user(user_id: int):
+    try:
+        # Fetch review IDs for the given user
+        review_ids = review_ids_from_user(user_id)
+        # print(review_ids)
+        # If no reviews are found, return a message
+        if not review_ids:
+            return {"message": "No reviews found for this user."}
+
+        # Fetch detailed review information for each review_id
+        reviews_data = []
+        for review_id in review_ids:
+            # print('here', review_id)
+            review_info = get_review_info(review_id)
+            reviews_data.append(review_info)
+
+        return {"count": len(reviews_data), "results": reviews_data}
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
