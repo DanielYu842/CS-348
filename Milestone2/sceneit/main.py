@@ -426,11 +426,11 @@ def delete_movie(movie_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
 @app.get("/movies_top")
-def get_top_10_movies():
+def get_movies_by_rating(best: bool = True):
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                query = """
+                query = f"""
                 SELECT 
                     m.*,
                     ARRAY_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL) as genres,
@@ -451,7 +451,7 @@ def get_top_10_movies():
                 LEFT JOIN Director d ON md.director_id = d.director_id
                 WHERE m.audience_rating IS NOT NULL
                 GROUP BY m.movie_id
-                ORDER BY m.audience_rating DESC
+                ORDER BY m.audience_rating {"DESC" if best else "ASC"}
                 LIMIT 10
                 """
 
