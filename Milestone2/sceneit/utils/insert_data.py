@@ -58,7 +58,7 @@ def hasReviewsBeenPopulated(cur):
     count = cur.fetchone()[0]
     return True if count > 0 else False
 
-def insert_reviews(csv_filepath: str):
+def insert_reviews(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -69,7 +69,7 @@ def insert_reviews(csv_filepath: str):
        return 
     
     reviews = load_csv_data(csv_filepath)
-    numReviews = len(reviews) if IS_PRODUCTION else min(SAMPLE_SIZE, len(reviews))
+    numReviews = len(reviews) if IS_PRODUCTION else min(sample_size, len(reviews))
 
     for reviewIndex in range(numReviews):
         review_attrs = reviews[reviewIndex]
@@ -82,7 +82,7 @@ def insert_reviews(csv_filepath: str):
     cur.close()
     conn.close()
 
-def insert_users(csv_filepath: str):
+def insert_users(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -93,7 +93,7 @@ def insert_users(csv_filepath: str):
        return 
     
     users = load_csv_data(csv_filepath)
-    numUsers = len(users) if IS_PRODUCTION else min(len(users), SAMPLE_SIZE)
+    numUsers = len(users) if IS_PRODUCTION else min(len(users), sample_size)
 
     for userIndex in range(numUsers):
         user_attrs = users[userIndex]
@@ -113,7 +113,7 @@ def hasMoviesBeenPopulated(cur):
     movie_count = cur.fetchone()[0]
     return True if movie_count > 0 else False
 
-def insert_movies(csv_filepath: str):
+def insert_movies(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
     conn = get_db_connection()
     cur = conn.cursor()
     print("Ready to insert movie table")
@@ -124,7 +124,7 @@ def insert_movies(csv_filepath: str):
        return
     
     movies = load_csv_data(csv_filepath)
-    numMovies = len(movies) if IS_PRODUCTION else min(len(movies), SAMPLE_SIZE)
+    numMovies = len(movies) if IS_PRODUCTION else min(len(movies), sample_size)
 
     for movieIndex in range(numMovies):
         movie_attrs = movies[movieIndex]
