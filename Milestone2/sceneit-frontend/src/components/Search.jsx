@@ -64,7 +64,7 @@ const Search = () => {
   return (
     <div className="explore">
       <header className="header">
-        <h1 className="logo">Sceneit</h1>
+        <h1 className="logo">SceneIt</h1>
       </header>
 
       <div className="content">
