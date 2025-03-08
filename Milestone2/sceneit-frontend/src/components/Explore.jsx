@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './Explore.css';
 import { API_ENDPOINT } from '../config';
 import MovieCard from './MovieCard'; 
+import UserCard from './UserCard'; 
 
 const Explore = () => {
   const [topReviewedMovies, setTopReviewedMovies] = useState([]);
@@ -46,11 +47,17 @@ const Explore = () => {
       ) : (
         <div className="movie-row">
           {items?.map((item) => (
-            <MovieCard 
-              key={item.id || item.movie_id || item.user_id} 
-              movie={!isUsers ? item : null}
-              // user={isUsers ? item : null}
-            />
+            item.username ? (
+              <UserCard 
+                key={item.id || item.movie_id || item.user_id} 
+                user={item}
+              />
+            ) : (
+              <MovieCard 
+                key={item.id || item.movie_id || item.user_id} 
+                movie={item}
+              />
+            )
           ))}
         </div>
       )}

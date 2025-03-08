@@ -8,10 +8,10 @@ const UserCard = ({ user }) => {
         alt={user.username || 'User'} 
         className="user-avatar"
       />
-      <div className="user-info">
+    <div className="user-info">
         <h3 className="user-name">{user.username || 'Unknown User'}</h3>
-        <p className="user-likes">Likes: {user.like_count || 0}</p>
-      </div>
+        <p className="user-likes">Total Likes: {user.total_likes || 0}</p>
+    </div>
     </div>
   );
 };
