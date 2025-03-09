@@ -140,6 +140,54 @@ def create_review(review: ReviewCreate):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+
+@app.post("/users/signup")
+def create_user(user: UserCreate):
+    try:
+        hashed_password = pwd_context.hash(user.password)
+
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("""
+                    INSERT INTO Users (username, email, password_hash, created_at, updated_at) 
+                    VALUES (%s, %s, %s, NOW(), NOW()) 
+                    RETURNING user_id, username, email, created_at
+                """, (user.username, user.email, hashed_password))
+
+                new_user = cur.fetchone()
+                return new_user
+
+    except psycopg2.errors.UniqueViolation:
+        raise HTTPException(status_code=400, detail="Username or email already exists")
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@app.post("/watch")
+def add_watched_movie(user_id: int, movie_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO Watched (user_id, movie_id)
+                    VALUES (%s, %s)
+                    ON CONFLICT (user_id, movie_id) DO NOTHING;
+                """, (user_id, movie_id))
+                
+                if cur.rowcount == 0:
+                    return {"message": "Movie already watched by user"}
+
+                return {"message": "Movie added to watched list"}
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+
 class SetupType(str, Enum):
     local = "local"
     prod = "prod"
@@ -155,7 +203,7 @@ def setup_database(setup_type: SetupType):
     
     if update_tables:
         print("Dropping all tables")
-        cur.execute("Drop table if exists Movie cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
+        cur.execute("Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
     cur.execute(CREATE_TABLES_SQL)
     conn.commit()
     print("inserting movie")
@@ -169,7 +217,7 @@ def setup_database(setup_type: SetupType):
     print("inserting reviews")
     insert_reviews(REVIEWS_CSV_PATH, sample_size)
     create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
-
+    print("inserting likes")
     repeats = []
     for _ in range(50):
         id = random.randint(1, 10)
@@ -182,12 +230,47 @@ def setup_database(setup_type: SetupType):
         if (id,rid) in repeats: continue
         repeats.append((id,rid))
         like_item(data)
+    print("inserting watched")
+    add_watched_movie(1,1)
+    add_watched_movie(1,2)
+    add_watched_movie(1,3)
 
+    add_watched_movie(2,1)
+    add_watched_movie(3,1)
+    add_watched_movie(2,2)
+    add_watched_movie(3,2)
+    add_watched_movie(3,3)
+    add_watched_movie(3,4)
+    add_watched_movie(3,5)
+    add_watched_movie(3,6)
+    add_watched_movie(3,7)
 
     cur.close()
     conn.close()
 
     return {"message": "Database setup successful"}
+setup_database(SetupType.local)
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+@app.post("/users/login")
+def login_user(user: UserLogin):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT user_id, username, email, password_hash FROM Users WHERE email = %s", (user.email,))
+                db_user = cur.fetchone()
+
+                if not db_user or not pwd_context.verify(user.password, db_user["password_hash"]):
+                    return {"success": False, "message": "Invalid credentials"}
+
+                return {"success": True, "user": {"user_id": db_user["user_id"], "username": db_user["username"], "email": db_user["email"]}}
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
 
 # Request/Response Models
 class MovieCreate(BaseModel):
@@ -231,6 +314,44 @@ def get_table_data(table_name: str):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Error fetching values: {e}")
 
+
+@app.get("/user_profile/{user_id}/most_mutual")
+def get_most_mutual_watched_user(user_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("""
+                    WITH user_watched_count AS (
+                        SELECT user_id, COUNT(movie_id) AS watched_count
+                        FROM watched
+                        GROUP BY user_id
+                    ),
+                    mutual_watched AS (
+                        SELECT 
+                            u2.user_id, 
+                            COUNT(*) AS mutual_count
+                        FROM watched w1
+                        JOIN watched w2 ON w1.movie_id = w2.movie_id 
+                                        AND w1.user_id <> w2.user_id
+                        JOIN user_watched_count u1 ON w1.user_id = u1.user_id
+                        JOIN user_watched_count u2 ON w2.user_id = u2.user_id
+                        WHERE w1.user_id = %s and u2.watched_count <= 2 * u1.watched_count
+                        GROUP BY u2.user_id
+                    )
+                    SELECT user_id, mutual_count
+                    FROM mutual_watched
+                    ORDER BY mutual_count DESC
+                """, (user_id,))
+
+                user = cur.fetchall()
+
+                if user is None:
+                    raise HTTPException(status_code=404, detail="No mutual watched movies found")
+
+                return user
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.get("/reviews/search")
 def search_comments_by_movie_id(movie_id: int):
@@ -712,52 +833,6 @@ def get_movies_by_rating(best: bool = True):
                     "count": len(rows),
                     "results": rows
                 }
-    except psycopg2.Error as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-class UserCreate(BaseModel):
-    username: str
-    email: EmailStr
-    password: str
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-@app.post("/users/signup")
-def create_user(user: UserCreate):
-    try:
-        hashed_password = pwd_context.hash(user.password)
-
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("""
-                    INSERT INTO Users (username, email, password_hash, created_at, updated_at) 
-                    VALUES (%s, %s, %s, NOW(), NOW()) 
-                    RETURNING user_id, username, email, created_at
-                """, (user.username, user.email, hashed_password))
-
-                new_user = cur.fetchone()
-                return new_user
-
-    except psycopg2.errors.UniqueViolation:
-        raise HTTPException(status_code=400, detail="Username or email already exists")
-    except psycopg2.Error as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-@app.post("/users/login")
-def login_user(user: UserLogin):
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("SELECT user_id, username, email, password_hash FROM Users WHERE email = %s", (user.email,))
-                db_user = cur.fetchone()
-
-                if not db_user or not pwd_context.verify(user.password, db_user["password_hash"]):
-                    return {"success": False, "message": "Invalid credentials"}
-
-                return {"success": True, "user": {"user_id": db_user["user_id"], "username": db_user["username"], "email": db_user["email"]}}
-
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 

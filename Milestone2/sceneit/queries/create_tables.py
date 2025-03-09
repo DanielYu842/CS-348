@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS Movie (
     audience_count INT CHECK (audience_count >= 0)
 );
 
+
 CREATE TABLE IF NOT EXISTS Genre (
     genre_id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL
@@ -109,5 +110,12 @@ CREATE TABLE IF NOT EXISTS Likes (
         (review_id IS NOT NULL AND comment_id IS NULL) OR 
         (review_id IS NULL AND comment_id IS NOT NULL)
     )
+);
+
+CREATE TABLE IF NOT EXISTS Watched (
+    user_id INT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
+    movie_id INT NOT NULL REFERENCES Movie(movie_id) ON DELETE CASCADE,
+    watched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (user_id, movie_id)
 );
 """

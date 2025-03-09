@@ -8,7 +8,7 @@ from objects.review import Review
 from objects.movie import Movie
 from psycopg2.extensions import cursor
 
-SAMPLE_SIZE = 250
+SAMPLE_SIZE = 50
 
 def insert_into_entity_table(cur: cursor, table_name, entity_name):
     cur.execute(f"""
@@ -116,7 +116,6 @@ def hasMoviesBeenPopulated(cur):
 def insert_movies(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
     conn = get_db_connection()
     cur = conn.cursor()
-    print("Ready to insert movie table")
     if hasMoviesBeenPopulated(cur):
        print("Movies table already populated. Skipping insertion.")
        cur.close()
@@ -127,7 +126,6 @@ def insert_movies(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
     numMovies = len(movies) if IS_PRODUCTION else min(len(movies), sample_size)
 
     for movieIndex in range(numMovies):
-        print("adding movie", movieIndex)
         movie_attrs = movies[movieIndex]
         if Movie.movie_attrs_soft_check(movie_attrs):
             movie = Movie(movie_attrs)
