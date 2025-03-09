@@ -243,7 +243,7 @@ def setup_database(setup_type: SetupType):
     add_watched_movie(3,4)
     add_watched_movie(3,5)
     add_watched_movie(3,6)
-    add_watched_movie(3,7)
+    # add_watched_movie(3,7)
 
     cur.close()
     conn.close()
@@ -341,9 +341,10 @@ def get_most_mutual_watched_user(user_id: int):
                     SELECT user_id, mutual_count
                     FROM mutual_watched
                     ORDER BY mutual_count DESC
+                    LIMIT 1
                 """, (user_id,))
 
-                user = cur.fetchall()
+                user = cur.fetchone()
 
                 if user is None:
                     raise HTTPException(status_code=404, detail="No mutual watched movies found")
