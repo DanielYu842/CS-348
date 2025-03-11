@@ -26,6 +26,8 @@
 
   Run the following to seed the data with the production dataset (might take a few minutes): `curl -X POST "http://localhost:8000/seed?setup_type=prod"`
 
+  The production data being used can be found in the `sceneit/static/*.csv` files.
+
   ## Connecting To Our Application
 
   Run the following, to see hello world:
