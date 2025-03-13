@@ -135,5 +135,8 @@ CREATE INDEX IF NOT EXISTS idx_movieactor_actor_id ON Actor(actor_id);
 
 CREATE INDEX IF NOT EXISTS idx_moviestudio_movie_id ON MovieStudio(movie_id);
 CREATE INDEX IF NOT EXISTS idx_moviestudio_studio_id ON Studio(studio_id);
+
+CREATE INDEX IF NOT EXISTS idx_movie_title_lower ON Movie(LOWER(title));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_movie_title ON Movie(title);
 """
 #useful for faster joins for returning full movie results
