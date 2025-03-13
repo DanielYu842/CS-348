@@ -119,3 +119,21 @@ CREATE TABLE IF NOT EXISTS Watched (
     PRIMARY KEY (user_id, movie_id)
 );
 """
+
+CREATE_INDICES_SQL = """
+CREATE INDEX idx_moviegenre_movie_id ON MovieGenre(movie_id);
+CREATE INDEX idx_moviegenre_genre_id ON Genre(genre_id);
+
+CREATE INDEX idx_moviedirector_movie_id ON MovieDirector(movie_id);
+CREATE INDEX idx_moviedirector_director_id ON Director(director_id);
+
+CREATE INDEX idx_moviewriter_movie_id ON MovieWriter(movie_id);
+CREATE INDEX idx_moviewriter_writer_id ON Writer(writer_id);
+
+CREATE INDEX idx_movieactor_movie_id ON MovieActor(movie_id);
+CREATE INDEX idx_movieactor_actor_id ON Actor(actor_id);
+
+CREATE INDEX idx_moviestudio_movie_id ON MovieStudio(movie_id);
+CREATE INDEX idx_moviestudio_studio_id ON Studio(studio_id);
+"""
+#useful for faster joins for returning full movie results

@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from typing import Optional, List
-from queries.create_tables import CREATE_TABLES_SQL
+from queries.create_tables import CREATE_TABLES_SQL, CREATE_INDICES_SQL
 from static.vars import MOVIES_CSV_PATH, USERS_CSV_PATH,REVIEWS_CSV_PATH
 from utils.insert_data import insert_movies, insert_users, insert_reviews
 from utils.db import get_db_connection
@@ -205,6 +205,7 @@ def setup_database(setup_type: SetupType):
         print("Dropping all tables")
         cur.execute("Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
     cur.execute(CREATE_TABLES_SQL)
+    cur.execute(CREATE_INDICES_SQL)
     conn.commit()
     print("inserting movie")
     insert_movies(MOVIES_CSV_PATH, sample_size)
