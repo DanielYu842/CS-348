@@ -1,0 +1,46 @@
+.reviews-container {
+    padding: 20px;
+    padding-top: 50px;
+    background-color: #1e1e1e;
+    color: white;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: auto;
+}
+  
+h2 {
+    text-align: center;
+    color: #e50914;
+}
+  
+.reviews-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+  
+.reviews-table th, .reviews-table td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: left;
+}
+  
+.reviews-table th {
+    background-color: #333;
+    color: white;
+}
+  
+.reviews-table tr:nth-child(even) {
+    background-color: #292929;
+}
+  
+.reviews-table tr:hover {
+    background-color: #444;
+}
+  
+.error {
+    color: #ff4c4c;
+    text-align: center;
+    margin-top: 10px;
+}
+  

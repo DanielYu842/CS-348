@@ -10,6 +10,7 @@ import Login from './components/Login';
 import SingleMoviePage from './components/SingleMoviePage';
 import AddMovie from './components/AddMovie';
 import UpdateMovie from './components/UpdateMovie';
+import MovieReviews from './components/MovieReviews';
 
 function App() {
   const [data, setData] = useState(null);
@@ -60,6 +61,14 @@ function App() {
               className={activeScreen === 'explore' ? 'active' : ''}
             >
               Explore
+            </button>
+          </Link>
+          <Link to="/">
+            <button 
+              onClick={() => setActiveScreen('moviereviews')}
+              className={activeScreen === 'moviereviews' ? 'active' : ''}
+            >
+              Reviews
             </button>
           </Link>
           <Link to="/">
@@ -122,6 +131,7 @@ function App() {
         </nav>
 
         {activeScreen === 'explore' && <Explore />}
+        {activeScreen === 'moviereviews' && <MovieReviews />}
         {activeScreen === 'masterTable' && <MasterTable />}
         {activeScreen === 'addmovie' && <AddMovie />}
         {activeScreen === 'updatemovie' && <UpdateMovie />}
