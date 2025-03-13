@@ -220,9 +220,9 @@ def setup_database(setup_type: SetupType):
     create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
     print("inserting likes")
     repeats = []
-    for _ in range(50):
+    for _ in range(200):
         id = random.randint(1, 10)
-        rid = random.randint(1, 10)
+        rid = random.randint(1, 49)
         data =LikeCreate(
             user_id=id,  # user_id from 1 to 10
             review_id=rid,  # review_id from 1 to 10
@@ -231,6 +231,7 @@ def setup_database(setup_type: SetupType):
         if (id,rid) in repeats: continue
         repeats.append((id,rid))
         like_item(data)
+    
     print("inserting watched")
     add_watched_movie(1,1)
     add_watched_movie(1,2)
@@ -355,24 +356,34 @@ def get_most_mutual_watched_user(user_id: int):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+
 @app.get("/reviews/search")
 def search_comments_by_movie_id(movie_id: int):
-    # Note to self:
-    # should return review_id's instead, then have a function that takes a review_id and gets all the information about the review
-    # Eg - review likes, replies to the review, rating, etc
-    query = f"SELECT * FROM Reviews join (Select user_id, username, email from Users) Users on Reviews.user_id = Users.user_id where movie_id = {movie_id}"
+    # Query to get review IDs for a given movie
+    query = """
+        SELECT review_id FROM Reviews
+        WHERE movie_id = %s
+    """
+    
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                cur.execute(query)
+                cur.execute(query, (movie_id,))
                 rows = cur.fetchall()
+                
+                if not rows:
+                    return {"count": 0, "reviews": []}
+
+                # Fetch detailed review info for each review_id
+                review_infos = [get_review_info(row["review_id"]) for row in rows]
+
                 return {
-                    "count": len(rows),
-                    "results": rows
+                    "count": len(review_infos),
+                    "reviews": review_infos
                 }
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-            
+
 
 @app.get("/movies/search")
 def search_movies(
