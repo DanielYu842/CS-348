@@ -251,7 +251,6 @@ def setup_database(setup_type: SetupType):
     conn.close()
 
     return {"message": "Database setup successful"}
-setup_database(SetupType.local)
 
 class UserLogin(BaseModel):
     email: EmailStr

@@ -114,19 +114,27 @@ CREATE TABLE IF NOT EXISTS Likes (
 
 
 CREATE_INDICES_SQL = """
-CREATE INDEX idx_moviegenre_movie_id ON MovieGenre(movie_id);
-CREATE INDEX idx_moviegenre_genre_id ON Genre(genre_id);
+CREATE INDEX IF NOT EXISTS idx_movie_title_lower ON Movie(LOWER(title));
+CREATE INDEX IF NOT EXISTS idx_movie_title ON Movie(title);
+CREATE INDEX IF NOT EXISTS idx_movie_reviews_id ON Reviews(movie_id);
 
-CREATE INDEX idx_moviedirector_movie_id ON MovieDirector(movie_id);
-CREATE INDEX idx_moviedirector_director_id ON Director(director_id);
+CREATE INDEX IF NOT EXISTS idx_likes_user_id ON Likes(user_id);
+CREATE INDEX IF NOT EXISTS idx_moviegenre_movie_id ON MovieGenre(movie_id);
+CREATE INDEX IF NOT EXISTS idx_moviegenre_genre_id ON Genre(genre_id);
 
-CREATE INDEX idx_moviewriter_movie_id ON MovieWriter(movie_id);
-CREATE INDEX idx_moviewriter_writer_id ON Writer(writer_id);
+CREATE INDEX IF NOT EXISTS idx_moviedirector_movie_id ON MovieDirector(movie_id);
+CREATE INDEX IF NOT EXISTS idx_moviedirector_director_id ON Director(director_id);
 
-CREATE INDEX idx_movieactor_movie_id ON MovieActor(movie_id);
-CREATE INDEX idx_movieactor_actor_id ON Actor(actor_id);
+CREATE INDEX IF NOT EXISTS idx_moviewriter_movie_id ON MovieWriter(movie_id);
+CREATE INDEX IF NOT EXISTS idx_moviewriter_writer_id ON Writer(writer_id);
 
-CREATE INDEX idx_moviestudio_movie_id ON MovieStudio(movie_id);
-CREATE INDEX idx_moviestudio_studio_id ON Studio(studio_id);
+CREATE INDEX IF NOT EXISTS idx_movieactor_movie_id ON MovieActor(movie_id);
+CREATE INDEX IF NOT EXISTS idx_movieactor_actor_id ON Actor(actor_id);
+
+CREATE INDEX IF NOT EXISTS idx_moviestudio_movie_id ON MovieStudio(movie_id);
+CREATE INDEX IF NOT EXISTS idx_moviestudio_studio_id ON Studio(studio_id);
+
+CREATE INDEX IF NOT EXISTS idx_movie_title_lower ON Movie(LOWER(title));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_movie_title ON Movie(title);
 """
 #useful for faster joins for returning full movie results

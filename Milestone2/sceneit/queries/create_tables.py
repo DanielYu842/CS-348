@@ -121,6 +121,11 @@ CREATE TABLE IF NOT EXISTS Watched (
 """
 
 CREATE_INDICES_SQL = """
+CREATE INDEX IF NOT EXISTS idx_movie_title_lower ON Movie(LOWER(title));
+CREATE INDEX IF NOT EXISTS idx_movie_title ON Movie(title);
+CREATE INDEX IF NOT EXISTS idx_movie_reviews_id ON Reviews(movie_id);
+
+CREATE INDEX IF NOT EXISTS idx_likes_user_id ON Likes(user_id);
 CREATE INDEX IF NOT EXISTS idx_moviegenre_movie_id ON MovieGenre(movie_id);
 CREATE INDEX IF NOT EXISTS idx_moviegenre_genre_id ON Genre(genre_id);
 
