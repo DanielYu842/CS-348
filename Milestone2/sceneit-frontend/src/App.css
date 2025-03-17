@@ -1,16 +1,16 @@
 .App {
   background-color: #141414;
   min-height: 100vh;
-  position: relative; /* Added to ensure proper layering */
+  position: relative; 
 }
 
 .navigation {
   position: fixed;
-  top: 20px; /* Adjust spacing from top */
-  right: 20px; /* Position on the right */
-  z-index: 1001; /* Ensure it stays above content */
-  display: flex; /* Align buttons horizontally */
-  gap: 10px; /* Space between buttons */
+  top: 20px; 
+  right: 20px;
+  z-index: 1001;
+  display: flex;
+  gap: 10px; 
 }
 
 .navigation button {
