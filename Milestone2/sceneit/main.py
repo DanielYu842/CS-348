@@ -3,6 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from typing import Optional, List
 from queries.create_tables import CREATE_TABLES_SQL, CREATE_INDICES_SQL
+from queries.reputation import (
+    CREATE_REPUTATION_TABLE_SQL,
+    CREATE_REPUTATION_TRIGGERS_SQL,
+    GET_USER_REPUTATION_SQL,
+    GET_USER_REPUTATION_BY_ID_SQL
+)
 from static.vars import MOVIES_CSV_PATH, USERS_CSV_PATH,REVIEWS_CSV_PATH
 from utils.insert_data import insert_movies, insert_users, insert_reviews
 from utils.db import get_db_connection
@@ -203,9 +209,11 @@ def setup_database(setup_type: SetupType):
     
     if update_tables:
         print("Dropping all tables")
-        cur.execute("Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade")
+        cur.execute("Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade; Drop table if exists UserReputation cascade;")
     cur.execute(CREATE_TABLES_SQL)
     cur.execute(CREATE_INDICES_SQL)
+    cur.execute(CREATE_REPUTATION_TABLE_SQL)
+    cur.execute(CREATE_REPUTATION_TRIGGERS_SQL)
     conn.commit()
     print("inserting movie")
     insert_movies(MOVIES_CSV_PATH, sample_size)
@@ -1064,5 +1072,35 @@ def get_all_reviews(sort_by: ReviewSortOptions = ReviewSortOptions.created_at):
 
                 return {"count": len(reviews), "reviews": reviews}
 
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@app.get("/users/reputation")
+def get_user_reputation():
+    limit = 10
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute(GET_USER_REPUTATION_SQL, (limit,))
+                results = cur.fetchall()
+                return {
+                    "count": len(results),
+                    "results": results
+                }
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@app.get("/users/reputation/{user_id}")
+def get_user_reputation_by_id(user_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute(GET_USER_REPUTATION_BY_ID_SQL, (user_id,))
+                result = cur.fetchone()
+                
+                if result is None:
+                    raise HTTPException(status_code=404, detail="User reputation not found")
+                
+                return result
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
