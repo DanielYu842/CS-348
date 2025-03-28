@@ -25,6 +25,7 @@ from datetime import datetime
 import random
 from utils.review_info import get_review_info
 from utils.user_profile import review_ids_from_user
+from utils.batch import batch_handle_related
 from enum import Enum
 
 # Password hashing
@@ -532,83 +533,68 @@ def search_movies(
 
 @app.post("/movies/", status_code=201)
 def create_movie(movie: MovieCreate):
+    conn = None
     try:
-        with get_db_connection() as conn:
-            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                # Insert movie
-                cur.execute("""
-                    INSERT INTO Movie (title, info, critics_consensus, rating, 
-                                     in_theaters_date, on_streaming_date, runtime_in_minutes,
-                                     tomatometer_status, tomatometer_rating, tomatometer_count,
-                                     audience_rating, audience_count)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    RETURNING movie_id
-                """, (movie.title, movie.info, movie.critics_consensus, movie.rating,
-                     movie.in_theaters_date, movie.on_streaming_date, movie.runtime_in_minutes,
-                     movie.tomatometer_status, movie.tomatometer_rating, movie.tomatometer_count,
-                     movie.audience_rating, movie.audience_count))
-                
-                movie_id = cur.fetchone()['movie_id']
+        conn = get_db_connection() 
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            # insert main movie record
+            cur.execute("""
+                INSERT INTO Movie (title, info, critics_consensus, rating, 
+                                 in_theaters_date, on_streaming_date, runtime_in_minutes,
+                                 tomatometer_status, tomatometer_rating, tomatometer_count,
+                                 audience_rating, audience_count) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                RETURNING movie_id
+            """, (movie.title, movie.info, movie.critics_consensus, movie.rating,
+                 movie.in_theaters_date, movie.on_streaming_date, movie.runtime_in_minutes,
+                 movie.tomatometer_status, movie.tomatometer_rating, movie.tomatometer_count,
+                 movie.audience_rating, movie.audience_count))
+            
+            result = cur.fetchone()
+            if not result:
+                 raise HTTPException(status_code=500, detail="Failed to create movie record and retrieve ID.")
+            movie_id = result['movie_id']
 
-                # Insert related entities and relationships
-                for genre in movie.genres:
-                    cur.execute("INSERT INTO Genre (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING genre_id", (genre,))
-                    result = cur.fetchone()
-                    if result:
-                        genre_id = result['genre_id']
-                    else:
-                        cur.execute("SELECT genre_id FROM Genre WHERE name = %s", (genre,))
-                        genre_id = cur.fetchone()['genre_id']
-                    cur.execute("INSERT INTO MovieGenre (movie_id, genre_id) VALUES (%s, %s)", (movie_id, genre_id))
+            print(f"Created base movie record with ID: {movie_id}")
 
-                # Similar process for writers, actors, studios, directors
-                for writer in movie.writers:
-                    cur.execute("INSERT INTO Writer (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING writer_id", (writer,))
-                    result = cur.fetchone()
-                    if result:
-                        writer_id = result['writer_id']
-                    else:
-                        cur.execute("SELECT writer_id FROM Writer WHERE name = %s", (writer,))
-                        writer_id = cur.fetchone()['writer_id']
-                    cur.execute("INSERT INTO MovieWriter (movie_id, writer_id) VALUES (%s, %s)", (movie_id, writer_id))
+            # batch insert all the related entities
+            batch_handle_related(cur, movie_id, movie.genres,    
+                                 'Genre', 'genre_id', 'name', 
+                                 'MovieGenre', 'genre_id')
+                                 
+            batch_handle_related(cur, movie_id, movie.writers,   
+                                 'Writer', 'writer_id', 'name', 
+                                 'MovieWriter', 'writer_id')
+                                 
+            batch_handle_related(cur, movie_id, movie.actors,    
+                                 'Actor', 'actor_id', 'name', 
+                                 'MovieActor', 'actor_id')
+                                 
+            batch_handle_related(cur, movie_id, movie.studios,   
+                                 'Studio', 'studio_id', 'name', 
+                                 'MovieStudio', 'studio_id')
+                                 
+            batch_handle_related(cur, movie_id, movie.directors, 
+                                 'Director', 'director_id', 'name', 
+                                 'MovieDirector', 'director_id')
 
-                for actor in movie.actors:
-                    cur.execute("INSERT INTO Actor (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING actor_id", (actor,))
-                    result = cur.fetchone()
-                    if result:
-                        actor_id = result['actor_id']
-                    else:
-                        cur.execute("SELECT actor_id FROM Actor WHERE name = %s", (actor,))
-                        actor_id = cur.fetchone()['actor_id']
-                    cur.execute("INSERT INTO MovieActor (movie_id, actor_id) VALUES (%s, %s)", (movie_id, actor_id))
+            # commit tx
+            print("Committing transaction...")
+            conn.commit()
 
-                for studio in movie.studios:
-                    cur.execute("INSERT INTO Studio (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING studio_id", (studio,))
-                    result = cur.fetchone()
-                    if result:
-                        studio_id = result['studio_id']
-                    else:
-                        cur.execute("SELECT studio_id FROM Studio WHERE name = %s", (studio,))
-                        studio_id = cur.fetchone()['studio_id']
-                    cur.execute("INSERT INTO MovieStudio (movie_id, studio_id) VALUES (%s, %s)", (movie_id, studio_id))
+            # Return the created movie with all relationships
+            return get_movie(movie_id)
 
-                for director in movie.directors:
-                    cur.execute("INSERT INTO Director (name) VALUES (%s) ON CONFLICT (name) DO NOTHING RETURNING director_id", (director,))
-                    result = cur.fetchone()
-                    if result:
-                        director_id = result['director_id']
-                    else:
-                        cur.execute("SELECT director_id FROM Director WHERE name = %s", (director,))
-                        director_id = cur.fetchone()['director_id']
-                    cur.execute("INSERT INTO MovieDirector (movie_id, director_id) VALUES (%s, %s)", (movie_id, director_id))
-
-                conn.commit()
-
-                # Return the created movie with all relationships
-                return get_movie(movie_id)
-
-    except psycopg2.Error as e:
+    except (Exception, psycopg2.Error) as e:
+        print(f"Database error occurred: {e}")
+        if conn:
+            # rollback tx on error explicitly
+            conn.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        if conn:
+            conn.close()
+            print("Database connection closed.")
 
 @app.get("/movies/{movie_id}")
 def get_movie(movie_id: int):
