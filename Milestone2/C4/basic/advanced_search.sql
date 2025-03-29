@@ -55,4 +55,4 @@ GROUP BY m.movie_id, m.title, m.info, m.critics_consensus,
         m.tomatometer_rating, m.tomatometer_count,
         m.audience_rating, m.audience_count
 ORDER BY m.title 
-LIMIT 50;
+LIMIT %s OFFSET %s;

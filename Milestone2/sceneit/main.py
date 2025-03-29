@@ -403,7 +403,9 @@ def search_movies(
     studios: Optional[List[str]] = Query(None),
     directors: Optional[List[str]] = Query(None),
     year: Optional[int] = None,
-    rating: Optional[str] = None
+    rating: Optional[str] = None,
+    limit: int = Query(50, ge=1),
+    offset: int = Query(0, ge=0)
 ):
     try:
         with get_db_connection() as conn:
@@ -518,9 +520,11 @@ def search_movies(
                          m.tomatometer_rating, m.tomatometer_count,
                          m.audience_rating, m.audience_count
                 ORDER BY m.title 
-                LIMIT 50
+                LIMIT %s OFFSET %s
                 """
                 
+                params.append(limit)
+                params.append(offset)
                 cur.execute(query, params)
                 rows = cur.fetchall()
 
