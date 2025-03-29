@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from typing import Optional, List
-from queries.create_tables import CREATE_TABLES_SQL, CREATE_INDICES_SQL
+from queries.create_tables import CREATE_TABLES_SQL, CREATE_INDICES_SQL, INFO_TS_VECTOR_TRIGGER
 from queries.reputation import (
     CREATE_REPUTATION_TABLE_SQL,
     CREATE_REPUTATION_TRIGGERS_SQL,
@@ -213,6 +213,7 @@ def setup_database(setup_type: SetupType):
         cur.execute("Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade; Drop table if exists UserReputation cascade;")
     cur.execute(CREATE_TABLES_SQL)
     cur.execute(CREATE_INDICES_SQL)
+    cur.execute(INFO_TS_VECTOR_TRIGGER)
     cur.execute(CREATE_REPUTATION_TABLE_SQL)
     cur.execute(CREATE_REPUTATION_TRIGGERS_SQL)
     conn.commit()

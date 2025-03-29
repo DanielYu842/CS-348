@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS Movie (
     tomatometer_rating DECIMAL(5, 2) CHECK (tomatometer_rating BETWEEN 0 AND 100),
     tomatometer_count INT CHECK (tomatometer_count >= 0),
     audience_rating DECIMAL(5, 2) CHECK (audience_rating BETWEEN 0 AND 100),
-    audience_count INT CHECK (audience_count >= 0)
+    audience_count INT CHECK (audience_count >= 0),
+    info_ts_vector tsvector
 );
 
 
@@ -145,3 +146,18 @@ CREATE INDEX IF NOT EXISTS idx_movie_title_lower ON Movie(LOWER(title));
 CREATE UNIQUE INDEX IF NOT EXISTS idx_movie_title ON Movie(title);
 """
 #useful for faster joins for returning full movie results
+
+# create tsvector collumns on [info] collumn of [Movie] for better search
+# also need a trigger to run to keep this new collum up to date with the info collumn
+INFO_TS_VECTOR_TRIGGER = """
+CREATE FUNCTION update_info_vector() RETURNS TRIGGER AS $$
+BEGIN
+  NEW.info_ts_vector := to_tsvector('english', NEW.info);
+  RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER movie_info_vector_update
+BEFORE INSERT OR UPDATE ON Movie
+FOR EACH ROW EXECUTE FUNCTION update_info_vector();
+"""

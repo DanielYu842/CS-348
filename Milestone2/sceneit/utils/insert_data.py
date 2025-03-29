@@ -134,7 +134,7 @@ def insert_movies(csv_filepath: str, sample_size: int = SAMPLE_SIZE):
               movie.rating, movie.in_theaters_date, movie.on_streaming_date,
               movie.runtime_in_minutes, movie.tomatometer_status,
               movie.tomatometer_rating, movie.tomatometer_count,
-              movie.audience_rating, movie.audience_count,
+              movie.audience_rating, movie.audience_count, movie.movie_info
             ))
 
             populate_movie_junctions(movie, cur)
