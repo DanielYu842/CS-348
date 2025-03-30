@@ -343,6 +343,33 @@ def get_table_data(table_name: str):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Error fetching values: {e}")
 
+@app.get("/user_profile/{user_id}/reputation")
+def getRep(user_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        query = """
+        SELECT reputation_score, last_updated FROM UserReputation
+        WHERE user_id = %s
+        """
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if not result:
+            return {"message": "User reputation not found."}
+
+        return {
+            "user_id": user_id,
+            "reputation": result[0],
+            "last_updated": result[1]
+        }
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.get("/user_profile/{user_id}/most_mutual")
 def get_most_mutual_watched_user(user_id: int):
@@ -376,7 +403,7 @@ def get_most_mutual_watched_user(user_id: int):
                 user = cur.fetchone()
 
                 if user is None:
-                    raise HTTPException(status_code=404, detail="No mutual watched movies found")
+                    raise HTTPException(status_code=404, detail="No mutual users found")
 
                 return user
 
