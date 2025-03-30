@@ -44,3 +44,21 @@ h2 {
     margin-top: 10px;
 }
   
+.like-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.like-button:hover {
+  background-color: #45a049;
+}
+
+.like-button:active {
+  background-color: #3d8b40;
+}
+  
