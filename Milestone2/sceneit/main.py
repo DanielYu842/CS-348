@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from typing import Optional, List
-from queries.create_tables import CREATE_TABLES_SQL, CREATE_INDICES_SQL, INFO_TS_VECTOR_TRIGGER
+from queries.create_tables import CREATE_TABLES_SQL, CREATE_INDICES_SQL, INFO_TS_VECTOR_TRIGGER, CREATE_MATERIALIZED_VIEW, MATERIALIZED_VIEW_INDEX, REFRESH_MATERIALIZED_VIEW
 from queries.reputation import (
     CREATE_REPUTATION_TABLE_SQL,
     CREATE_REPUTATION_TRIGGERS_SQL,
@@ -44,6 +44,51 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
+MATERIALIZED_VIEW_NAME = "mv_top_10_reviewed_movies"
+
+scheduler = AsyncIOScheduler()
+
+def sync_refresh_materialized_view():
+    """
+    Uses get_db_connection to connect and refresh the materialized view.
+    APScheduler will run this in a thread pool.
+    """
+    print(f"[{datetime.now()}] Background Task: Attempting to refresh '{MATERIALIZED_VIEW_NAME}'...")
+    try:
+        with get_db_connection() as conn:
+            conn.autocommit = True
+
+            with conn.cursor() as cur:
+                print(f"[{datetime.now()}] Executing: REFRESH MATERIALIZED VIEW {MATERIALIZED_VIEW_NAME};")
+                cur.execute(f"REFRESH MATERIALIZED VIEW {MATERIALIZED_VIEW_NAME};")
+            print(f"[{datetime.now()}] Background Task: Successfully refreshed '{MATERIALIZED_VIEW_NAME}'.")
+    except psycopg2.Error as e:
+        print(f"[{datetime.now()}] Background Task Error: Database error during refresh: {e}")
+    except Exception as e:
+        print(f"[{datetime.now()}] Background Task Error: An unexpected error occurred: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    print("Starting scheduler...")
+    scheduler.add_job(
+        sync_refresh_materialized_view,
+        IntervalTrigger(hours=1),
+        id="mv_refresh_job",
+        replace_existing=True
+    )
+    scheduler.start()
+    print("Scheduler started.")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    print("Shutting down scheduler...")
+    scheduler.shutdown()
+    print("Scheduler shut down.")
+
 
 class LikeCreate(BaseModel):
     user_id: int
@@ -216,6 +261,8 @@ def setup_database(setup_type: SetupType):
     cur.execute(INFO_TS_VECTOR_TRIGGER)
     cur.execute(CREATE_REPUTATION_TABLE_SQL)
     cur.execute(CREATE_REPUTATION_TRIGGERS_SQL)
+    cur.execute(CREATE_MATERIALIZED_VIEW)
+    cur.execute(MATERIALIZED_VIEW_INDEX)
     conn.commit()
     print("inserting movie")
     insert_movies(MOVIES_CSV_PATH, sample_size)
@@ -274,6 +321,10 @@ def setup_database(setup_type: SetupType):
     add_watched_movie(3,5)
     add_watched_movie(3,6)
     # add_watched_movie(3,7)
+
+    cur.execute(REFRESH_MATERIALIZED_VIEW)
+    conn.commit()
+
 
     cur.close()
     conn.close()
@@ -905,43 +956,10 @@ def get_top_reviewed_movies():
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                # query = """
-                # with groupedReviews as (
-                # select movie_id, count(*) as reviewCount from reviews group by movie_id order by reviewCount desc limit 10
-                # )
-
-                # select * from groupedReviews;
-                # """
-
-                query = f"""
-
-                with groupedReviews as (
-                select movie_id, count(*) as reviewCount from reviews group by movie_id order by reviewCount desc limit 10
-                )
-
-                SELECT 
-                    m.*,
-                    groupedReviews.reviewCount,
-                    ARRAY_AGG(DISTINCT g.name) FILTER (WHERE g.name IS NOT NULL) as genres,
-                    ARRAY_AGG(DISTINCT w.name) FILTER (WHERE w.name IS NOT NULL) as writers,
-                    ARRAY_AGG(DISTINCT a.name) FILTER (WHERE a.name IS NOT NULL) as actors,
-                    ARRAY_AGG(DISTINCT s.name) FILTER (WHERE s.name IS NOT NULL) as studios,
-                    ARRAY_AGG(DISTINCT d.name) FILTER (WHERE d.name IS NOT NULL) as directors
-                FROM Movie m
-                inner join groupedReviews on groupedReviews.movie_id = m.movie_id
-                LEFT JOIN MovieGenre mg ON m.movie_id = mg.movie_id
-                LEFT JOIN Genre g ON mg.genre_id = g.genre_id
-                LEFT JOIN MovieWriter mw ON m.movie_id = mw.movie_id
-                LEFT JOIN Writer w ON mw.writer_id = w.writer_id
-                LEFT JOIN MovieActor ma ON m.movie_id = ma.movie_id
-                LEFT JOIN Actor a ON ma.actor_id = a.actor_id
-                LEFT JOIN MovieStudio ms ON m.movie_id = ms.movie_id
-                LEFT JOIN Studio s ON ms.studio_id = s.studio_id
-                LEFT JOIN MovieDirector md ON m.movie_id = md.movie_id
-                LEFT JOIN Director d ON md.director_id = d.director_id
-                WHERE m.audience_rating IS NOT NULL
-                GROUP BY m.movie_id,groupedReviews.reviewCount
-                order by groupedReviews.reviewCount desc;
+                query = """
+                    SELECT *
+                    FROM mv_top_10_reviewed_movies
+                    ORDER BY reviewCount DESC;
                 """
                 
                 cur.execute(query)
