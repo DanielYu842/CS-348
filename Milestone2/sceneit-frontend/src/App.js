@@ -11,6 +11,7 @@ import SingleMoviePage from './components/SingleMoviePage';
 import AddMovie from './components/AddMovie';
 import UpdateMovie from './components/UpdateMovie';
 import MovieReviews from './components/MovieReviews';
+import WriteReview from './components/WriteReview';
 
 function App() {
   const [data, setData] = useState(null);
@@ -63,14 +64,14 @@ function App() {
               Explore
             </button>
           </Link>
-          <Link to="/">
+          {/* <Link to="/">
             <button 
               onClick={() => setActiveScreen('moviereviews')}
               className={activeScreen === 'moviereviews' ? 'active' : ''}
             >
               Reviews
             </button>
-          </Link>
+          </Link> */}
           <Link to="/">
             <button 
               onClick={() => setActiveScreen('masterTable')}
@@ -131,7 +132,7 @@ function App() {
         </nav>
 
         {activeScreen === 'explore' && <Explore />}
-        {activeScreen === 'moviereviews' && <MovieReviews />}
+        {/* {activeScreen === 'moviereviews' && <MovieReviews />} */}
         {activeScreen === 'masterTable' && <MasterTable />}
         {activeScreen === 'addmovie' && <AddMovie />}
         {activeScreen === 'updatemovie' && <UpdateMovie />}
@@ -148,7 +149,15 @@ function App() {
         <Route path="/" element={<MainContent />} />
         <Route 
           path="/movie/:id" 
-          element={<SingleMoviePage />}
+          element={<SingleMoviePage isAuthenticated={isAuthenticated}/>}
+        />
+        <Route 
+          path="/write-review/:id" 
+          element={<WriteReview />} 
+        />
+        <Route 
+          path="/view-reviews/:id" 
+          element={<MovieReviews />} 
         />
       </Routes>
     </Router>

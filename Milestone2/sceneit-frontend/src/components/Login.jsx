@@ -28,6 +28,7 @@ const Login = ({ onLogin, onSignup }) => {
 
         localStorage.setItem('authUser', JSON.stringify(data));
         setIsAuthenticated(true);
+        console.log(JSON.stringify(data));
 
 
       onLogin();

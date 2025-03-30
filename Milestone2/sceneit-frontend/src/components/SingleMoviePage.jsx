@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_ENDPOINT } from '../config';
 import './SingleMoviePage.css';
+import WriteReview from './WriteReview';
 
-const SingleMoviePage = () => {
+const SingleMoviePage = ({ isAuthenticated }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
@@ -38,6 +39,14 @@ const SingleMoviePage = () => {
     navigate('/'); // Navigate back to the home/explore page
   };
 
+  const handleWriteReviewClick = (movie) => {
+    navigate(`/write-review/${movie.movie_id}`);
+  };
+
+  const handleViewReviewClick = (movie) => {
+    navigate(`/view-reviews/${movie.movie_id}`);
+  };
+
   if (loading) {
     return <div className="single-movie-page">Loading...</div>;
   }
@@ -52,6 +61,14 @@ const SingleMoviePage = () => {
           <h1>Error</h1>
           <p>{error}</p>
           <button className="back-button" onClick={handleBackClick}>Back to Explore</button>
+          {isAuthenticated && movie && (
+            <button className="back-button" onClick={() => handleWriteReviewClick(movie)}>
+              Write a Review
+            </button>
+          )}
+          <button className="back-button" onClick={() => handleViewReviewClick(movie)}>
+              Reviews
+          </button>
         </div>
       </div>
     );
@@ -66,6 +83,14 @@ const SingleMoviePage = () => {
         <div className="content">
           <p>No movie data available</p>
           <button className="back-button" onClick={handleBackClick}>Back to Explore</button>
+          {isAuthenticated && movie && (
+            <button className="back-button" onClick={() => handleWriteReviewClick(movie)}>
+              Write a Review
+            </button>
+          )}
+          <button className="back-button" onClick={() => handleViewReviewClick(movie)}>
+              Reviews
+          </button>        
         </div>
       </div>
     );
@@ -78,6 +103,14 @@ const SingleMoviePage = () => {
       </header>
       <div className="content">
         <button className="back-button" onClick={handleBackClick}>Back to Explore</button>
+        {isAuthenticated && movie && (
+            <button className="back-button" onClick={() => handleWriteReviewClick(movie)}>
+              Write a Review
+            </button>
+        )}
+        <button className="back-button" onClick={() => handleViewReviewClick(movie)}>
+              Reviews
+        </button>
         <div className="movie-details">
           <h1>{movie?.title ?? 'Untitled'}</h1>
           <div className="movie-meta">

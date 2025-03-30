@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MovieReviews.css';
+import { useParams } from 'react-router-dom';
 
 const MovieReviews = () => {
-  const [movieId, setMovieId] = useState('');
+  const { id } = useParams(); // movie_id from URL
+  const movieId = id;
   const [reviews, setReviews] = useState([]);
+  const [movieTitle, setMovieTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const fetchMovieTitle = async () => {
+    try {
+      const res = await fetch(`http://localhost:8000/movies/${movieId}`);
+      const data = await res.json();
+      if (res.ok) {
+        setMovieTitle(data.title);
+      } else {
+        setMovieTitle('(Unknown Title)');
+      }
+    } catch (err) {
+      console.error('Error fetching movie title:', err);
+      setMovieTitle('(Unknown Title)');
+    }
+  };
 
   const fetchReviews = async () => {
     if (!movieId) return;
@@ -27,18 +45,15 @@ const MovieReviews = () => {
     }
   };
 
+  useEffect(() => {
+    fetchMovieTitle();
+    fetchReviews();
+  }, [movieId]);
+
   return (
     <div className="reviews-container">
-      <h2>Search for Movie Reviews</h2>
-      <input
-        type="text"
-        placeholder="Enter Movie ID"
-        value={movieId}
-        onChange={(e) => setMovieId(e.target.value)}
-        className="movie-input"
-      />
-      <button onClick={fetchReviews} className="search-button">Search</button>
-      
+      <h2>Movie Reviews of {movieTitle}</h2>
+
       {loading && <p>Loading reviews...</p>}
       {error && <p className="error">{error}</p>}
       {!loading && reviews.length === 0 && <p>No reviews found for this movie.</p>}
