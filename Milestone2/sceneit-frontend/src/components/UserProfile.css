@@ -1,0 +1,25 @@
+.user-profile {
+    padding: 40px 20px;
+    background-color: #1e1e1e;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .section-title {
+    color: #e50914;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+  }
+  
+  .review-list, .user-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 40px;
+  }
+  
+  .review-list li, .user-list li {
+    background: #2a2a2a;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+  }

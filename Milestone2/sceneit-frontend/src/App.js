@@ -12,6 +12,7 @@ import AddMovie from './components/AddMovie';
 import UpdateMovie from './components/UpdateMovie';
 import MovieReviews from './components/MovieReviews';
 import WriteReview from './components/WriteReview';
+import UserProfile from './components/UserProfile';
 
 function App() {
   const [data, setData] = useState(null);
@@ -53,6 +54,16 @@ function App() {
   };
 
   const MainContent = () => {
+    const navigate = useNavigate();
+
+    const handleViewProfile = () => {
+      const authData = JSON.parse(localStorage.getItem('authUser'));
+      const userId = authData?.user?.user_id;
+      if (userId) {
+        navigate(`/profile/${userId}`);
+      }
+    }
+
     return (
       <div className="App">
         <nav className="navigation">
@@ -128,6 +139,11 @@ function App() {
               </button>
             </Link>
           )}
+          {isAuthenticated && (
+            <button onClick={handleViewProfile}>
+              Profile
+            </button>
+          )}
           {isAuthenticated && <button onClick={handleLogout}>Logout</button>}
         </nav>
 
@@ -159,6 +175,7 @@ function App() {
           path="/view-reviews/:id" 
           element={<MovieReviews />} 
         />
+        <Route path="/profile/:userId" element={<UserProfile />} />
       </Routes>
     </Router>
   );
