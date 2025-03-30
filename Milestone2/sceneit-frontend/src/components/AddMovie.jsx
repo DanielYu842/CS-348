@@ -21,12 +21,12 @@ const AddMovie = ({ onMovieAdded }) => {
   const [directors, setDirectors] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-  
+
     const movieData = {
       title,
       info,
@@ -46,7 +46,7 @@ const AddMovie = ({ onMovieAdded }) => {
       studios: studios ? studios.split(',').map(s => s.trim()) : [],
       directors: directors ? directors.split(',').map(d => d.trim()) : [],
     };
-  
+
     try {
       const response = await fetch('http://localhost:8000/movies/', {
         method: 'POST',
@@ -56,13 +56,13 @@ const AddMovie = ({ onMovieAdded }) => {
         },
         body: JSON.stringify(movieData),
       });
-    
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || 'Failed to add movie');
       }
-  
+
       alert('Movie added successfully!');
       onMovieAdded();
     } catch (error) {
@@ -82,18 +82,48 @@ const AddMovie = ({ onMovieAdded }) => {
             <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="movie-input" required />
             <input type="text" placeholder="Info" value={info} onChange={(e) => setInfo(e.target.value)} className="movie-input" required />
             <input type="text" placeholder="Critics Consensus" value={criticsConsensus} onChange={(e) => setCriticsConsensus(e.target.value)} className="movie-input" required />
-            <input type="text" placeholder="Rating (e.g., PG-13)" value={rating} onChange={(e) => setRating(e.target.value)} className="movie-input" required />
-            <input type="date" placeholder="In Theaters Date" value={inTheatersDate} onChange={(e) => setInTheatersDate(e.target.value)} className="movie-input" required />
-            <input type="date" placeholder="On Streaming Date" value={onStreamingDate} onChange={(e) => setOnStreamingDate(e.target.value)} className="movie-input" required />
+
+            <label className="movie-label">Rating</label>
+            <select value={rating} onChange={(e) => setRating(e.target.value)} className="movie-input" required>
+              <option value="">Select rating</option>
+              <option value="G">G</option>
+              <option value="PG">PG</option>
+              <option value="PG-13">PG-13</option>
+              <option value="R">R</option>
+              <option value="NC-17">NC-17</option>
+            </select>
+
+            <label className="movie-label">In Theaters Date</label>
+            <input type="date" value={inTheatersDate} onChange={(e) => setInTheatersDate(e.target.value)} className="movie-input" required />
+
+            <label className="movie-label">On Streaming Date</label>
+            <input type="date" value={onStreamingDate} onChange={(e) => setOnStreamingDate(e.target.value)} className="movie-input" required />
+
             <input type="number" placeholder="Runtime in Minutes" value={runtime} onChange={(e) => setRuntime(e.target.value)} className="movie-input" required />
-            <input type="text" placeholder="Tomatometer Status" value={tomatometerStatus} onChange={(e) => setTomatometerStatus(e.target.value)} className="movie-input" required />
+
+            <label className="movie-label">Tomatometer Status</label>
+            <select value={tomatometerStatus} onChange={(e) => setTomatometerStatus(e.target.value)} className="movie-input" required>
+              <option value="">Select status</option>
+              <option value="Fresh">Fresh</option>
+              <option value="Rotten">Rotten</option>
+              <option value="Certified Fresh">Certified Fresh</option>
+            </select>
+
+            <input type="number" placeholder="Tomatometer Rating (%)" value={tomatometerRating} onChange={(e) => setTomatometerRating(e.target.value)} className="movie-input" required />
+            <input type="number" placeholder="Tomatometer Count" value={tomatometerCount} onChange={(e) => setTomatometerCount(e.target.value)} className="movie-input" required />
+            <input type="number" placeholder="Audience Rating (%)" value={audienceRating} onChange={(e) => setAudienceRating(e.target.value)} className="movie-input" required />
+            <input type="number" placeholder="Audience Count" value={audienceCount} onChange={(e) => setAudienceCount(e.target.value)} className="movie-input" required />
+
             <input type="text" placeholder="Genres (comma-separated)" value={genres} onChange={(e) => setGenres(e.target.value)} className="movie-input" required />
             <input type="text" placeholder="Writers (comma-separated)" value={writers} onChange={(e) => setWriters(e.target.value)} className="movie-input" required />
             <input type="text" placeholder="Actors (comma-separated)" value={actors} onChange={(e) => setActors(e.target.value)} className="movie-input" required />
             <input type="text" placeholder="Studios (comma-separated)" value={studios} onChange={(e) => setStudios(e.target.value)} className="movie-input" required />
             <input type="text" placeholder="Directors (comma-separated)" value={directors} onChange={(e) => setDirectors(e.target.value)} className="movie-input" required />
+
             {error && <p className="error-message">{error}</p>}
-            <button type="submit" className="movie-button" disabled={loading}>{loading ? 'Adding Movie...' : 'Add Movie'}</button>
+            <button type="submit" className="movie-button" disabled={loading}>
+              {loading ? 'Adding Movie...' : 'Add Movie'}
+            </button>
           </form>
         </div>
       </div>
