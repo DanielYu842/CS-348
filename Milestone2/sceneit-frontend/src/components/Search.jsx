@@ -6,11 +6,11 @@ import MovieCard from './MovieCard';
 const Search = () => {
   const [searchParams, setSearchParams] = useState({
     title: '',
-    genres: [],
-    writers: [],
-    actors: [],
-    studios: [],
-    directors: [],
+    genres: '',
+    writers: '',
+    actors: '',
+    studios: '',
+    directors: '',
     year: '',
     rating: '',
   });
@@ -33,7 +33,7 @@ const Search = () => {
       .filter((item) => item !== '');
     setSearchParams((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: value.join(','),
     }));
   };
 
@@ -42,11 +42,26 @@ const Search = () => {
     const queryParams = new URLSearchParams();
 
     if (searchParams.title) queryParams.append('title', searchParams.title);
-    if (searchParams.genres.length > 0) queryParams.append('genres', searchParams.genres.join(','));
-    if (searchParams.writers.length > 0) queryParams.append('writers', searchParams.writers.join(','));
-    if (searchParams.actors.length > 0) queryParams.append('actors', searchParams.actors.join(','));
-    if (searchParams.studios.length > 0) queryParams.append('studios', searchParams.studios.join(','));
-    if (searchParams.directors.length > 0) queryParams.append('directors', searchParams.directors.join(','));
+    if (searchParams.genres) {
+      const genres = searchParams.genres.split(',').map(g => g.trim()).filter(g => g);
+      genres.forEach(genre => queryParams.append('genres', genre));
+    }
+    if (searchParams.writers) {
+      const writers = searchParams.writers.split(',').map(w => w.trim()).filter(w => w);
+      writers.forEach(writer => queryParams.append('writers', writer));
+    }
+    if (searchParams.actors) {
+      const actors = searchParams.actors.split(',').map(a => a.trim()).filter(a => a);
+      actors.forEach(actor => queryParams.append('actors', actor));
+    }
+    if (searchParams.studios) {
+      const studios = searchParams.studios.split(',').map(s => s.trim()).filter(s => s);
+      studios.forEach(studio => queryParams.append('studios', studio));
+    }
+    if (searchParams.directors) {
+      const directors = searchParams.directors.split(',').map(d => d.trim()).filter(d => d);
+      directors.forEach(director => queryParams.append('directors', director));
+    }
     if (searchParams.year) queryParams.append('year', searchParams.year);
     if (searchParams.rating) queryParams.append('rating', searchParams.rating);
 
@@ -83,13 +98,13 @@ const Search = () => {
               />
             </div>
             <div className="form-group">
-              <label>Genres (comma-separated):</label>
+              <label>Genres:</label>
               <input
                 type="text"
                 name="genres"
-                value={searchParams.genres.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'genres')}
-                placeholder="e.g., Drama, Action"
+                value={searchParams.genres}
+                onChange={handleInputChange}
+                placeholder="e.g.,Drama,Action"
               />
             </div>
           </div>
@@ -97,23 +112,23 @@ const Search = () => {
           {/* Row 2: Writers and Actors */}
           <div className="form-row">
             <div className="form-group">
-              <label>Writers (comma-separated):</label>
+              <label>Writers:</label>
               <input
                 type="text"
                 name="writers"
-                value={searchParams.writers.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'writers')}
-                placeholder="e.g., Writer1, Writer2"
+                value={searchParams.writers}
+                onChange={handleInputChange}
+                placeholder="e.g.,Writer1,Writer2"
               />
             </div>
             <div className="form-group">
-              <label>Actors (comma-separated):</label>
+              <label>Actors:</label>
               <input
                 type="text"
                 name="actors"
-                value={searchParams.actors.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'actors')}
-                placeholder="e.g., Actor1, Actor2"
+                value={searchParams.actors}
+                onChange={handleInputChange}
+                placeholder="e.g.,Actor1,Actor2"
               />
             </div>
           </div>
@@ -121,23 +136,23 @@ const Search = () => {
           {/* Row 3: Studios and Directors */}
           <div className="form-row">
             <div className="form-group">
-              <label>Studios (comma-separated):</label>
+              <label>Studios:</label>
               <input
                 type="text"
                 name="studios"
-                value={searchParams.studios.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'studios')}
-                placeholder="e.g., Studio1, Studio2"
+                value={searchParams.studios}
+                onChange={handleInputChange}
+                placeholder="e.g.,Studio1,Studio2"
               />
             </div>
             <div className="form-group">
-              <label>Directors (comma-separated):</label>
+              <label>Directors:</label>
               <input
                 type="text"
                 name="directors"
-                value={searchParams.directors.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'directors')}
-                placeholder="e.g., Director1, Director2"
+                value={searchParams.directors}
+                onChange={handleInputChange}
+                placeholder="e.g.,Director1,Director2"
               />
             </div>
           </div>
