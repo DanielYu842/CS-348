@@ -8,19 +8,21 @@ const UserProfile = () => {
   const [userReviews, setUserReviews] = useState([]);
   const [likedReviews, setLikedReviews] = useState([]);
   const [similarUsers, setSimilarUsers] = useState([]);
+  const [reputation, setReputation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const [reviewsRes, likesRes, similarRes] = await Promise.allSettled([
+        const [reviewsRes, likesRes, similarRes, repRes] = await Promise.allSettled([
           fetch(`${API_ENDPOINT}/user_profile/${userId}/user_reviews`),
           fetch(`${API_ENDPOINT}/user_profile/${userId}/user_liked`),
-          fetch(`${API_ENDPOINT}/user_profile/${userId}/most_mutual`)
+          fetch(`${API_ENDPOINT}/user_profile/${userId}/most_mutual`),
+          fetch(`${API_ENDPOINT}/user_profile/${userId}/reputation`)
         ]);
 
-        // Handle reviews
+        // Reviews
         if (reviewsRes.status === 'fulfilled' && reviewsRes.value.ok) {
           const reviewsData = await reviewsRes.value.json();
           setUserReviews(reviewsData.results || []);
@@ -28,7 +30,7 @@ const UserProfile = () => {
           setUserReviews([]);
         }
 
-        // Handle likes
+        // Likes
         if (likesRes.status === 'fulfilled' && likesRes.value.ok) {
           const likesData = await likesRes.value.json();
           const likedReviewIds = likesData.review_ids || [];
@@ -41,13 +43,22 @@ const UserProfile = () => {
           setLikedReviews([]);
         }
 
-        // Handle similar users
+        // Similar Users
         if (similarRes.status === 'fulfilled' && similarRes.value.ok) {
           const similarData = await similarRes.value.json();
           setSimilarUsers(similarData ? [similarData] : []);
         } else {
           setSimilarUsers([]);
         }
+
+        // Reputation
+        if (repRes.status === 'fulfilled' && repRes.value.ok) {
+          const repData = await repRes.value.json();
+          setReputation(repData);
+        } else {
+          setReputation(null);
+        }
+
       } catch (err) {
         setError('Unexpected error fetching profile data');
       } finally {
@@ -63,6 +74,14 @@ const UserProfile = () => {
   return (
     <div className="user-profile">
       {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+
+      {reputation && (
+        <div className="reputation-section">
+          <h1 className="section-title">Reputation</h1>
+          <p><strong>Score:</strong> {reputation.reputation_score}</p>
+          <p><strong>Last Updated:</strong> {new Date(reputation.last_updated).toLocaleString()}</p>
+        </div>
+      )}
 
       <h1 className="section-title">Your Reviews</h1>
       <ul className="review-list">
