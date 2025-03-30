@@ -241,6 +241,24 @@ def setup_database(setup_type: SetupType):
         if (id,rid) in repeats: continue
         repeats.append((id,rid))
         like_item(data)
+    print("adding comments")
+    for i in range(100):
+        reply_to_rid = random.randint(1,10)
+        Comment = CommentCreate(review_id = reply_to_rid, user_id = random.randint(1,10), content = 'this is a comment')
+        create_comment(Comment)
+    print("liking comments")
+    repeats = []
+    for _ in range(100):
+        id = random.randint(1, 10)
+        cid = random.randint(1, 10)
+        data = LikeCreate(
+            user_id=id,  # user_id from 1 to 10
+            review_id=None,  
+            comment_id=cid
+        )
+        if (id,cid) in repeats: continue
+        repeats.append((id,cid))
+        like_item(data)
     
     print("inserting watched")
     add_watched_movie(1,1)
