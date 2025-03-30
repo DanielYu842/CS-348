@@ -150,14 +150,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_movie_title ON Movie(title);
 # create tsvector collumns on [info] collumn of [Movie] for better search
 # also need a trigger to run to keep this new collum up to date with the info collumn
 INFO_TS_VECTOR_TRIGGER = """
-CREATE FUNCTION update_info_vector() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION update_info_vector() RETURNS TRIGGER AS $$
 BEGIN
   NEW.info_ts_vector := to_tsvector('english', NEW.info);
   RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER movie_info_vector_update
+CREATE OR REPLACE TRIGGER movie_info_vector_update
 BEFORE INSERT OR UPDATE ON Movie
 FOR EACH ROW EXECUTE FUNCTION update_info_vector();
 """
