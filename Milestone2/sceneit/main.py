@@ -374,7 +374,7 @@ def setup_database(setup_type: SetupType):
 
     sample_size = 50
     if setup_type == SetupType.prod:
-        sample_size = 1000000000
+        sample_size = 1000
     
     if update_tables:
         print("Dropping all tables")

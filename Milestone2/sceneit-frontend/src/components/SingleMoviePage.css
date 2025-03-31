@@ -104,14 +104,46 @@
   border-left: 4px solid #e50914; background-color: rgba(255, 255, 255, 0.03);
   border-radius: 0 4px 4px 0;
 }
-.scores-section .scores { display: flex; gap: 30px; flex-wrap: wrap; }
-.score-item { margin-bottom: 5px; }
-.score-label { color: #aaa; margin-right: 8px; display: inline-flex; align-items: center; gap: 5px;}
+.scores-section .scores {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.score-item {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.score-label {
+  color: #aaa;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .score-label span[role="img"] { font-size: 1.3em; }
-.score-value { font-weight: bold; font-size: 1.1em; color: #f5c518; margin-right: 8px;}
-.score-details { color: #888; font-size: 0.9em; }
+
+.score-value {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #f5c518;
+}
+
+.score-details {
+  color: #888;
+  font-size: 0.9em;
+}
+
 .tomatometer-label { color: #FF6347; }
 .audience-label { color: #FFD700; }
+
+
+.tomatometer-label { color: #FF6347; }
+.audience-label { color: #FFD700; }
+
 .details-section .details-grid {
   display: grid; grid-template-columns: auto 1fr; gap: 8px 15px; align-items: baseline;
 }
