@@ -1,64 +1,201 @@
-.reviews-container {
-    padding: 20px;
-    padding-top: 50px;
-    background-color: #1e1e1e;
-    color: white;
+/* --- START OF FILE MovieReviews.css --- */
+
+.movie-reviews-page {
+    padding: 30px 20px;
+    background-color: #141414; /* Darker background */
+    color: #e0e0e0;
+    min-height: 100vh;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.reviews-page-title {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 40px;
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+.movie-highlight {
+    color: #e50914; /* Netflix red */
+}
+
+.loading-message,
+.no-reviews-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #aaa;
+    margin-top: 50px;
+}
+
+.error-message {
+    color: #ff4d4d;
+    background-color: rgba(100, 0, 0, 0.5);
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 600px;
+    border: 1px solid #770000;
+}
+
+.reviews-list {
+    display: grid;
+    gap: 25px; /* Space between cards */
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.review-card {
+    background-color: #1f1f1f; /* Card background */
+    border: 1px solid #333;
     border-radius: 8px;
-    max-width: 800px;
-    margin: auto;
+    padding: 20px 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
-  
-h2 {
-    text-align: center;
-    color: #e50914;
+
+.review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
-  
-.reviews-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
 }
-  
-.reviews-table th, .reviews-table td {
-    border: 1px solid #444;
-    padding: 10px;
-    text-align: left;
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-  
-.reviews-table th {
-    background-color: #333;
-    color: white;
+
+.user-icon {
+    font-size: 1.3rem;
 }
-  
-.reviews-table tr:nth-child(even) {
-    background-color: #292929;
+
+.username-link {
+    color: #77b4de;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.1rem;
 }
-  
-.reviews-table tr:hover {
-    background-color: #444;
+
+.username-link:hover {
+    text-decoration: underline;
+    color: #a3d3f2;
 }
-  
-.error {
-    color: #ff4c4c;
-    text-align: center;
-    margin-top: 10px;
+
+.user-email {
+    font-size: 0.9em;
+    color: #888;
+    margin-left: 5px;
 }
-  
+
+.rating-info {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #f5c518; /* IMDb yellow for rating */
+}
+
+.rating-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
+    color: #f5c518;
+}
+
+.review-title {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+.review-content {
+    color: #bbb;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.review-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    font-size: 0.9em;
+    color: #999;
+}
+
+.review-date {
+    display: flex;
+    align-items: center;
+}
+
+.review-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between like count and button */
+}
+
+.like-count {
+    display: flex;
+    align-items: center;
+}
+
+.footer-icon {
+    margin-right: 5px;
+    font-size: 1em; /* Match surrounding text size */
+}
+
 .like-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  background-color: #333; /* Darker initial state */
+  color: #ccc;
+  border: 1px solid #555;
+  padding: 6px 14px;
+  border-radius: 15px; /* Pill shape */
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .like-button:hover {
-  background-color: #45a049;
+  background-color: #e50914; /* Red on hover */
+  color: white;
+  border-color: #e50914;
 }
 
 .like-button:active {
-  background-color: #3d8b40;
+  background-color: #b8070f; /* Darker red on click */
+  border-color: #b8070f;
 }
-  
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .reviews-page-title {
+        font-size: 1.8rem;
+    }
+    .review-card-header, .review-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .review-actions {
+        margin-top: 10px;
+        width: 100%;
+        justify-content: space-between; /* Space out actions on small screens */
+    }
+    .reviews-list {
+        gap: 15px;
+    }
+}

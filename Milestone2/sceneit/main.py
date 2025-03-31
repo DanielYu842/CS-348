@@ -219,7 +219,130 @@ def create_user(user: UserCreate):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+@app.get("/users/{user_id}/liked_movies/{movie_id}", status_code=200)
+def check_if_movie_liked(user_id: int, movie_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                 # Check user exists (optional)
+                cur.execute("SELECT 1 FROM Users WHERE user_id = %s", (user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+                # Check movie exists (optional)
+                cur.execute("SELECT 1 FROM Movie WHERE movie_id = %s", (movie_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Movie not found")
 
+                cur.execute("""
+                    SELECT EXISTS (
+                        SELECT 1 FROM Liked_Movie
+                        WHERE user_id = %s AND movie_id = %s
+                    );
+                """, (user_id, movie_id))
+                is_liked = cur.fetchone()[0] 
+                return {"is_liked": is_liked}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+class LikedMovieInfo(BaseModel):
+    movie_id: int
+    title: str
+    liked_at: datetime 
+
+
+@app.get("/user_profile/{user_id}/liked_movies", response_model=List[LikedMovieInfo])
+def get_user_liked_movies(user_id: int):
+    """
+    Retrieves a list of movies liked by the specified user.
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                # Check if user exists (optional but good practice)
+                cur.execute("SELECT 1 FROM Users WHERE user_id = %s", (user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+
+                query = """
+                    SELECT
+                        m.movie_id,
+                        m.title,
+                        lm.liked_at
+                    FROM Liked_Movie lm
+                    JOIN Movie m ON lm.movie_id = m.movie_id
+                    WHERE lm.user_id = %s
+                    ORDER BY lm.liked_at DESC; -- Show most recently liked first
+                """
+                cur.execute(query, (user_id,))
+                liked_movies = cur.fetchall()
+                return liked_movies # Returns list of dicts matching LikedMovieInfo
+
+    except psycopg2.Error as e:
+        print(f"Database error fetching liked movies for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="Database error retrieving liked movies.")
+    except Exception as e:
+        print(f"Unexpected error fetching liked movies for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")
+
+
+@app.delete("/unlike_movie", status_code=200)
+def remove_liked_movie(user_id: int, movie_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                 # Check user exists (optional, foreign key handles it but good for explicit error)
+                cur.execute("SELECT 1 FROM Users WHERE user_id = %s", (user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+                # Check movie exists (optional)
+                cur.execute("SELECT 1 FROM Movie WHERE movie_id = %s", (movie_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Movie not found")
+
+                cur.execute("""
+                    DELETE FROM Liked_Movie
+                    WHERE user_id = %s AND movie_id = %s;
+                """, (user_id, movie_id))
+
+                if cur.rowcount == 0:
+                    # Could mean it wasn't liked, or user/movie doesn't exist (handled above)
+                    # Return success regardless, idempotency is fine here
+                    return {"message": "Like removed or movie was not liked"}
+                conn.commit()
+                return {"message": "Movie removed from liked list"}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@app.post("/like_movie", status_code=201)
+def add_liked_movie(user_id: int, movie_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                # Check user exists
+                cur.execute("SELECT 1 FROM Users WHERE user_id = %s", (user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="User not found")
+                # Check movie exists
+                cur.execute("SELECT 1 FROM Movie WHERE movie_id = %s", (movie_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail="Movie not found")
+
+                cur.execute("""
+                    INSERT INTO Liked_Movie (user_id, movie_id, liked_at)
+                    VALUES (%s, %s, NOW())
+                    ON CONFLICT (user_id, movie_id) DO NOTHING;
+                """, (user_id, movie_id))
+
+                if cur.rowcount == 0:
+                    # It's not really an error if it already exists, return success
+                    return {"message": "Movie already liked by user or like added successfully"}
+                conn.commit()
+                return {"message": "Movie added to liked list"}
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
 @app.post("/watch")
 def add_watched_movie(user_id: int, movie_id: int):
     try:
@@ -255,7 +378,7 @@ def setup_database(setup_type: SetupType):
     
     if update_tables:
         print("Dropping all tables")
-        cur.execute("Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade; Drop table if exists UserReputation cascade;")
+        cur.execute("DROP TABLE IF EXISTS Liked_Movie CASCADE; Drop table if exists Movie cascade; Drop table if exists Watched cascade; Drop table if exists Users cascade; Drop table if exists reviews cascade; Drop table if exists Likes cascade; Drop table if exists UserReputation cascade;")
     cur.execute(CREATE_TABLES_SQL)
     cur.execute(CREATE_INDICES_SQL)
     cur.execute(INFO_TS_VECTOR_TRIGGER)
@@ -274,7 +397,11 @@ def setup_database(setup_type: SetupType):
         create_user(user)
     print("inserting reviews")
     insert_reviews(REVIEWS_CSV_PATH, sample_size)
-    create_review(ReviewCreate(movie_id=1,user_id=3,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
+    create_review(ReviewCreate(movie_id=1,user_id=1,title="nad Movie!",content="I hate the cinematography and the story.",rating=5.5))
+    create_review(ReviewCreate(movie_id=2,user_id=1,title="what the heck!",content="wow, bing.",rating=35.5))
+    create_review(ReviewCreate(movie_id=3,user_id=1,title="Great Movie!",content="I really enjoyed the cinematography and the story.",rating=85.5))
+    create_review(ReviewCreate(movie_id=4,user_id=1,title="it's ok",content="I real the story.",rating=33.5))
+
     print("inserting likes")
     repeats = []
     for _ in range(200):
@@ -307,19 +434,20 @@ def setup_database(setup_type: SetupType):
         repeats.append((id,cid))
         like_item(data)
     
-    print("inserting watched")
-    add_watched_movie(1,1)
-    add_watched_movie(1,2)
-    add_watched_movie(1,3)
-
-    add_watched_movie(2,1)
-    add_watched_movie(3,1)
-    add_watched_movie(2,2)
-    add_watched_movie(3,2)
-    add_watched_movie(3,3)
-    add_watched_movie(3,4)
-    add_watched_movie(3,5)
-    add_watched_movie(3,6)
+    print("inserting liked")
+    add_liked_movie(2, 1)
+    add_liked_movie(3, 1)
+    add_liked_movie(2, 2)
+    add_liked_movie(2, 3)
+    add_liked_movie(1, 2)
+    add_liked_movie(1, 3)
+    add_liked_movie(3, 2)
+    add_liked_movie(3, 3)
+    add_liked_movie(3, 4)
+    add_liked_movie(3, 5)
+    # add_liked_movie(3, 6)
+    add_liked_movie(4,1)
+    add_liked_movie(5,1)
     # add_watched_movie(3,7)
 
     cur.execute(REFRESH_MATERIALIZED_VIEW)
@@ -330,6 +458,61 @@ def setup_database(setup_type: SetupType):
     conn.close()
 
     return {"message": "Database setup successful"}
+class SimilarUser(BaseModel):
+    user_id: int
+    username: str
+    mutual_count: int
+
+@app.get("/user_profile/{user_id}/similar_likes", response_model=List[SimilarUser])
+def get_top_similar_users_by_likes(user_id: int):
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT 1 FROM Users WHERE user_id = %s", (user_id,))
+                if cur.fetchone() is None:
+                    raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
+
+                query = """
+                    WITH UserLikedCounts AS (
+                        SELECT
+                            user_id,
+                            COUNT(movie_id) AS liked_count
+                        FROM Liked_Movie
+                        GROUP BY user_id
+                    )
+                    SELECT
+                        other_user.user_id,
+                        other_user.username,
+                        COUNT(lm1.movie_id) AS mutual_count
+                    FROM Liked_Movie lm1
+                    JOIN Liked_Movie lm2 ON lm1.movie_id = lm2.movie_id
+                                         AND lm1.user_id <> lm2.user_id
+                    JOIN Users other_user ON lm2.user_id = other_user.user_id
+                    JOIN UserLikedCounts target_count ON lm1.user_id = target_count.user_id
+                    JOIN UserLikedCounts other_count ON lm2.user_id = other_count.user_id
+                    WHERE
+                        lm1.user_id = %s
+                        AND other_count.liked_count <= (2 * target_count.liked_count)
+                        AND target_count.liked_count <= (2 * other_count.liked_count)
+                    GROUP BY
+                        other_user.user_id,
+                        other_user.username
+                    ORDER BY
+                        mutual_count DESC,
+                        other_user.user_id ASC
+                    LIMIT 3;
+                """
+                cur.execute(query, (user_id,))
+                similar_users = cur.fetchall()
+
+                return similar_users
+
+    except psycopg2.Error as e:
+        print(f"Database error in get_top_similar_users_by_likes: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while fetching similar users.")
+    except Exception as e:
+        print(f"Unexpected error in get_top_similar_users_by_likes: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -394,34 +577,6 @@ def get_table_data(table_name: str):
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Error fetching values: {e}")
 
-@app.get("/user_profile/{user_id}/reputation")
-def getRep(user_id: int):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        query = """
-        SELECT reputation_score, last_updated FROM UserReputation
-        WHERE user_id = %s
-        """
-        cursor.execute(query, (user_id,))
-        result = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-
-        if not result:
-            return {"message": "User reputation not found."}
-
-        return {
-            "user_id": user_id,
-            "reputation": result[0],
-            "last_updated": result[1]
-        }
-
-    except psycopg2.Error as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
 @app.get("/user_profile/{user_id}/most_mutual")
 def get_most_mutual_watched_user(user_id: int):
     try:
@@ -468,6 +623,7 @@ def search_comments_by_movie_id(movie_id: int):
     query = """
         SELECT review_id FROM Reviews
         WHERE movie_id = %s
+        ORDER BY Reviews.created_at DESC
     """
     
     try:
@@ -1143,18 +1299,54 @@ def get_user_reputation():
                 }
     except psycopg2.Error as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-@app.get("/users/reputation/{user_id}")
-def get_user_reputation_by_id(user_id: int):
+@app.get("/users/{user_id}")
+def get_user_details(user_id: int):
     try:
         with get_db_connection() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                cur.execute(GET_USER_REPUTATION_BY_ID_SQL, (user_id,))
-                result = cur.fetchone()
-                
-                if result is None:
-                    raise HTTPException(status_code=404, detail="User reputation not found")
-                
-                return result
+                cur.execute("""
+                    SELECT user_id, username, email, created_at
+                    FROM Users
+                    WHERE user_id = %s
+                """, (user_id,))
+                user = cur.fetchone()
+                if not user:
+                    raise HTTPException(status_code=404, detail="User not found")
+                return user
     except psycopg2.Error as e:
+        print(f"Database error fetching user {user_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        print(f"Unexpected error fetching user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")
+    
+@app.get("/user_profile/{user_id}/reputation")
+def get_user_reputation_info(user_id: int): # Renamed function for clarity
+    try:
+        with get_db_connection() as conn:
+            # Use RealDictCursor to get column names
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+
+                query = """
+                SELECT reputation_score, last_updated
+                FROM UserReputation
+                WHERE user_id = %s
+                """
+                cur.execute(query, (user_id,))
+                result = cur.fetchone()
+
+                if not result:
+                    # Return a 404 specifically for not found reputation
+                    # Or return default values if preferred
+                    # return {"reputation_score": 0, "last_updated": None} # Example default
+                    raise HTTPException(status_code=404, detail="User reputation not found.")
+
+                # The RealDictCursor already returns a dict with correct keys
+                return result # Directly return the dictionary { "reputation_score": ..., "last_updated": ...}
+
+    except psycopg2.Error as e:
+        print(f"Database error fetching reputation for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error fetching reputation: {str(e)}")
+    except Exception as e:
+        print(f"Unexpected error fetching reputation for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")

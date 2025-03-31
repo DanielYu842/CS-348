@@ -1,105 +1,252 @@
+
 .single-movie-page {
-    padding-top: 50px;
-    background-color: #141414;
-    color: white;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
+  padding-top: 20px;
+  background-color: #141414;
+  color: #e0e0e0;
+  min-height: 100vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.single-movie-page.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #aaa;
+}
+
+.single-movie-page.error-page .content {
+  text-align: center;
+}
+.error-page h1 { color: #e50914; }
+.error-page p { color: #ccc; }
+
+.content {
+  padding: 20px;
+  max-width: 1100px;
+  margin: 20px auto;
+}
+
+.inline-error {
+  color: #ff4d4d;
+  background-color: rgba(100, 0, 0, 0.5);
+  padding: 10px 15px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 20px;
+  border: 1px solid #770000;
+  display: block;
+}
+
+.action-bar {
+  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.action-button {
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.action-button:hover {
+  background-color: #444;
+  border-color: #777;
+}
+
+.action-button.back-button {
+  background-color: #555;
+}
+.action-button.back-button:hover {
+  background-color: #666;
+}
+
+.action-button.like-button {
+  background-color: #333;
+  border-color: #555;
+  color: #ccc;
+}
+.action-button.like-button:hover {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  color: white;
+}
+.action-button.like-button.liked {
+  background-color: #e50914;
+  border-color: #e50914;
+  color: white;
+}
+.action-button.like-button.liked:hover {
+   background-color: #f40612;
+   border-color: #f40612;
+}
+.action-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.movie-layout {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+  align-items: flex-start;
+}
+
+.movie-poster {
+  flex: 0 0 300px;
+  height: 450px;
+  background-color: #222;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.movie-poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.poster-placeholder {
+  width: 100%; height: 100%; display: flex;
+  align-items: center; justify-content: center; color: #666;
+}
+
+.movie-details {
+  flex: 1;
+}
+
+.movie-details h1 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 2.4rem;
+  font-weight: bold;
+}
+
+.movie-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-bottom: 20px;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.rating-tag {
+  background-color: #444;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: #eee;
+  margin-right: 5px;
+}
+
+.description {
+  margin: 20px 0;
+  line-height: 1.6;
+  color: #ccc;
+  font-size: 1rem;
+}
+
+.section {
+  margin-bottom: 30px;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.section h2 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.critics-audience .consensus {
+  font-style: italic;
+  color: #bbb;
+  margin-bottom: 15px;
+  padding-left: 15px;
+  border-left: 3px solid #555;
+}
+
+.critics-audience .scores p, .details p {
+  margin: 8px 0;
+  line-height: 1.5;
+  color: #bbb;
+  font-size: 0.95rem;
+}
+
+.score-label {
+  font-weight: bold;
+  color: #ddd;
+  min-width: 110px;
+  display: inline-block;
+  margin-right: 5px;
+}
+.score-value {
+  font-weight: bold;
+  color: #f5c518;
+  margin-right: 5px;
+}
+.score-details {
+  color: #888;
+  font-size: 0.9em;
+}
+
+.details p strong {
+  color: #ddd;
+  min-width: 80px;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.cast-list {
+  list-style-type: none;
+  padding: 0;
+  columns: 2;
+  -webkit-columns: 2;
+  -moz-columns: 2;
+  column-gap: 30px;
+}
+
+.cast-list li {
+  margin-bottom: 8px;
+  color: #bbb;
+  font-size: 0.95rem;
+  break-inside: avoid-column;
+}
+
+@media (max-width: 768px) {
+  .movie-layout {
+      flex-direction: column;
+      align-items: center;
   }
-  
-  .header {
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: rgba(20, 20, 20, 0.9);
-    z-index: 1000;
+  .movie-poster {
+      flex-basis: auto;
+      width: 80%;
+      max-width: 300px;
+      height: auto;
+      margin-bottom: 20px;
   }
-  
-  .logo {
-    color: #e50914;
-    margin: 0;
-    font-size: 2rem;
+  .movie-poster img {
+      height: auto;
   }
-  
-  .content {
-    padding: 80px 20px 20px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .back-button {
-    background-color: #e50914;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-bottom: 20px;
-    margin-right: 10px;
-  }
-  
-  .back-button:hover {
-    background-color: #f40612;
-  }
-  
-  .movie-details {
-    padding: 20px;
-  }
-  
-  .movie-details h1 {
-    color: white;
-    margin-bottom: 15px;
-    font-size: 2rem;
-  }
-  
-  .movie-meta {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-    color: #777;
-  }
-  
-  .rating {
-    color: #46d369;
-    font-weight: bold;
-  }
-  
-  .runtime, .release-date {
-    color: #777;
-  }
-  
-  .description {
-    margin: 15px 0;
-    line-height: 1.5;
-    color: #ccc;
-  }
-  
-  .critics-audience, .details, .cast {
-    margin-bottom: 30px;
-  }
-  
-  .critics-audience h2, .details h2, .cast h2 {
-    color: white;
-    margin-bottom: 10px;
-    font-size: 1.5rem;
-  }
-  
-  .critics-audience p, .details p {
-    margin: 10px 0;
-    line-height: 1.5;
-    color: #ccc;
-  }
-  
-  .cast ul {
-    list-style-type: none;
-    padding: 0;
-    columns: 2;
-    -webkit-columns: 2;
-    -moz-columns: 2;
-  }
-  
-  .cast li {
-    margin: 5px 0;
-    color: #ccc;
-  }
+  .movie-details h1 { font-size: 2rem; }
+  .section h2 { font-size: 1.4rem; }
+  .cast-list { columns: 1; }
+}
